@@ -236,3 +236,12 @@ footer {
   margin-top: 15px;
   width: 100%;
 }
+
+
+/* 非表示クラスがきちんと機能するよう強制的なスタイルを設定 */
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

@@ -4,89 +4,326 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>みんなで育てる友情の木</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      padding: 20px;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    
+    .tree-container {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+    }
+    
+    .tree-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+      object-fit: contain;
+    }
+    
+    .tree-image.active {
+      opacity: 1;
+    }
+    
+    .growth-info {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 8px;
+      display: inline-block;
+    }
+    
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      border-radius: 50%;
+      border-top: 4px solid #4caf50;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    footer {
+      margin-top: 20px;
+      color: #7f8c8d;
+      font-size: 12px;
+      text-align: center;
+      padding: 10px;
+    }
+    
+    .admin-link {
+      position: fixed;
+      bottom: 5px;
+      right: 5px;
+      color: #ccc;
+      font-size: 10px;
+      text-decoration: none;
+    }
+    
+    .admin-link:hover {
+      color: #999;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>みんなで育てる友情の木</h1>
-      <p>友達と会った回数をもとに、みんなで木を育てよう！</p>
-    </header>
+    <h1>みんなで育てる友情の木</h1>
     
-    <main>
-      <div class="tree-container">
-        <div class="season-selector">
-          <button class="season-btn" data-season="spring">🌸 春</button>
-          <button class="season-btn" data-season="summer">☀️ 夏</button>
-          <button class="season-btn" data-season="autumn">🍂 秋</button>
-          <button class="season-btn" data-season="winter">❄️ 冬</button>
-        </div>
-        
-        <div class="tree-display" id="tree-svg">
-          <!-- 木のSVGがここに表示されます -->
-        </div>
-        
-        <div class="tree-info">
-          <p>成長段階: <span id="stage-display">0</span>/30</p>
-          <p>合計交流回数: <span id="total-value-display">0</span></p>
-          <div id="growing-message" class="hidden">🌱 成長中... 🌱</div>
-        </div>
+    <div class="tree-container" id="tree-container">
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>データを取得中...</p>
       </div>
-      
-      <div class="control-panel">
-        <h2>設定</h2>
-        
-        <div class="settings-form">
-          <div class="form-group">
-            <label for="spreadsheet-id">GoogleスプレッドシートID:</label>
-            <input type="text" id="spreadsheet-id" placeholder="スプレッドシートIDを入力">
-          </div>
-          
-          <div class="form-group">
-            <label for="min-threshold">最小値:</label>
-            <input type="number" id="min-threshold" value="0">
-          </div>
-          
-          <div class="form-group">
-            <label for="max-threshold">最大値:</label>
-            <input type="number" id="max-threshold" value="150">
-          </div>
-          
-          <div class="form-group">
-            <label for="manual-value">手動入力（テスト用）:</label>
-            <input type="number" id="manual-value" value="0">
-          </div>
-          
-          <div class="button-group">
-            <button id="fetch-data-btn">データを取得</button>
-            <button id="demo-growth-btn">成長をデモする</button>
-            <button id="save-image-btn">画像として保存</button>
-          </div>
-        </div>
-      </div>
-    </main>
-    
-    <div id="welcome-guide" class="modal hidden">
-      <div class="modal-content">
-        <h2>友情の木へようこそ！</h2>
-        <p>このアプリでは、友達との交流を記録することで木が成長します。</p>
-        <p>使い方は簡単です：</p>
-        <ol>
-          <li>Googleフォームで友達と会った記録を入力します</li>
-          <li>このページでスプレッドシートIDを入力します</li>
-          <li>「データを取得」ボタンをクリックします</li>
-          <li>みんなの交流に応じて木が成長します！</li>
-        </ol>
-        <!-- 修正後のコード (インラインJavaScriptを追加) -->
-        <button id="guide-close-btn" onclick="document.getElementById('welcome-guide').classList.add('hidden');">始める</button>
-      </div>
+      <!-- 画像はJavaScriptで動的に追加されます -->
     </div>
     
-    <footer>
-      <p>みんなの友情で育てる木 - クラスプロジェクト</p>
-    </footer>
+    <div class="growth-info" id="growth-info">
+      <p>成長段階: <span id="stage-display">0</span>/30</p>
+      <p>友達との交流回数: <span id="total-value-display">0</span></p>
+    </div>
   </div>
   
-  <script src="script.js"></script>
+  <footer>
+    みんなの友情で育つ木 - クラスプロジェクト
+  </footer>
+  
+  <a href="admin.html" class="admin-link">管理</a>
+  
+  <script>
+    // 設定とデータを保持するオブジェクト
+    const treeApp = {
+      config: {
+        apiUrl: '',
+        googleFormId: '',
+        images: []
+      },
+      data: {
+        totalValue: 0,
+        currentStage: 0
+      },
+      elements: {
+        treeContainer: document.getElementById('tree-container'),
+        loading: document.getElementById('loading'),
+        stageDisplay: document.getElementById('stage-display'),
+        totalValueDisplay: document.getElementById('total-value-display')
+      },
+      imageElements: [],
+      slideIndex: 0,
+      
+      // 初期化
+      init: function() {
+        // 設定を読み込む
+        this.loadConfig();
+        
+        // データを取得
+        this.fetchData();
+        
+        // 30秒ごとに自動更新
+        setInterval(() => this.fetchData(), 30000);
+      },
+      
+      // 設定を読み込む
+      loadConfig: function() {
+        const savedConfig = localStorage.getItem('treeAppConfig');
+        if (savedConfig) {
+          try {
+            const parsedConfig = JSON.parse(savedConfig);
+            this.config = { ...this.config, ...parsedConfig };
+          } catch (error) {
+            console.error('設定の読み込みに失敗しました:', error);
+          }
+        }
+        
+        // デフォルト画像を設定（設定がない場合）
+        if (!this.config.images || this.config.images.length === 0) {
+          this.setupDefaultImages();
+        }
+      },
+      
+      // デフォルト画像を設定
+      setupDefaultImages: function() {
+        this.config.images = [];
+        
+        // 30段階のデフォルト画像URLを生成
+        for (let i = 0; i <= 30; i++) {
+          // ここではプレースホルダー画像を使用
+          this.config.images.push(`https://via.placeholder.com/500x500.png?text=Growth+Stage+${i}`);
+        }
+      },
+      
+      // データを取得
+      fetchData: function() {
+        this.elements.loading.style.display = 'block';
+        
+        if (this.config.apiUrl) {
+          // APIからデータを取得
+          fetch(this.config.apiUrl)
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('APIからのレスポンスが不正です');
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data.error) {
+                throw new Error(`エラーが発生しました: ${data.message}`);
+              }
+              
+              // データを保存
+              this.data.totalValue = data.totalMeetings || 0;
+              
+              // 成長段階を計算
+              this.calculateStage();
+              
+              // 表示を更新
+              this.updateDisplay();
+              
+              // 成長アニメーションを開始
+              this.startGrowthAnimation();
+            })
+            .catch(error => {
+              console.error('データの取得に失敗しました:', error);
+              // エラーの場合はデモデータを使用
+              this.useDemoData();
+            })
+            .finally(() => {
+              this.elements.loading.style.display = 'none';
+            });
+        } else {
+          // API URLが設定されていない場合はデモデータを使用
+          console.log('API URLが設定されていないため、デモデータを使用します');
+          this.useDemoData();
+          this.elements.loading.style.display = 'none';
+        }
+      },
+      
+      // デモデータを使用
+      useDemoData: function() {
+        this.data.totalValue = Math.floor(Math.random() * 150);
+        this.calculateStage();
+        this.updateDisplay();
+        this.startGrowthAnimation();
+      },
+      
+      // 成長段階を計算
+      calculateStage: function() {
+        // 0〜150の値を30段階に変換
+        const maxValue = 150;
+        const totalStages = 30;
+        
+        if (this.data.totalValue >= maxValue) {
+          this.data.currentStage = totalStages;
+        } else {
+          this.data.currentStage = Math.floor((this.data.totalValue / maxValue) * totalStages);
+        }
+      },
+      
+      // 表示を更新
+      updateDisplay: function() {
+        this.elements.stageDisplay.textContent = this.data.currentStage;
+        this.elements.totalValueDisplay.textContent = this.data.totalValue;
+      },
+      
+      // 成長アニメーションを開始
+      startGrowthAnimation: function() {
+        // 既存の画像を削除
+        this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => {
+          img.remove();
+        });
+        
+        this.imageElements = [];
+        
+        // 0から現在の段階までの画像を追加
+        for (let i = 0; i <= this.data.currentStage; i++) {
+          const img = document.createElement('img');
+          img.src = this.config.images[i] || `https://via.placeholder.com/500x500.png?text=Growth+Stage+${i}`;
+          img.alt = `成長段階 ${i}`;
+          img.className = 'tree-image';
+          this.elements.treeContainer.appendChild(img);
+          this.imageElements.push(img);
+        }
+        
+        // アニメーションを開始
+        this.slideIndex = 0;
+        this.showSlide(0);
+      },
+      
+      // スライドを表示
+      showSlide: function(index) {
+        // 前のスライドを非表示
+        this.imageElements.forEach(img => {
+          img.classList.remove('active');
+        });
+        
+        // 指定されたスライドを表示
+        if (this.imageElements[index]) {
+          this.imageElements[index].classList.add('active');
+        }
+        
+        // 次のスライドへ
+        if (index < this.imageElements.length - 1) {
+          setTimeout(() => {
+            this.showSlide(index + 1);
+          }, 2000); // 2秒後に次のスライドへ
+        }
+      }
+    };
+    
+    // ページ読み込み時に初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      treeApp.init();
+    });
+  </script>
 </body>
 </html>

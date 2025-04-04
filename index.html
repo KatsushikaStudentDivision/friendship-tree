@@ -145,11 +145,10 @@
     const treeApp = {
       config: {
         apiUrl: '',
-        googleFormId: '',
-        images: []
+        stages: [] // 各段階に必要な交流回数を保存する配列
       },
       data: {
-        totalValue: 0,
+        totalMeetings: 0,
         currentStage: 0
       },
       elements: {
@@ -185,9 +184,28 @@
           }
         }
         
-        // デフォルト画像を設定（設定がない場合）
-        if (!this.config.images || this.config.images.length === 0) {
+        // ステージ設定がない場合はデフォルト値を設定
+        if (!this.config.stages || !Array.isArray(this.config.stages) || this.config.stages.length === 0) {
+          this.setupDefaultStages();
+        }
+        
+        // 画像の設定がない場合はデフォルト値を設定
+        if (!this.config.images || !Array.isArray(this.config.images) || this.config.images.length === 0) {
           this.setupDefaultImages();
+        }
+      },
+      
+      // デフォルトの段階設定
+      setupDefaultStages: function() {
+        this.config.stages = [];
+        
+        // デフォルトでは0〜150を30段階に均等に分ける
+        const maxMeetings = 150;
+        const totalStages = 30;
+        
+        for (let i = 0; i <= totalStages; i++) {
+          const meetingsRequired = Math.floor((i / totalStages) * maxMeetings);
+          this.config.stages.push(meetingsRequired);
         }
       },
       
@@ -220,8 +238,10 @@
                 throw new Error(`エラーが発生しました: ${data.message}`);
               }
               
+              console.log('APIからデータを取得しました:', data);
+              
               // データを保存
-              this.data.totalValue = data.totalMeetings || 0;
+              this.data.totalMeetings = data.totalMeetings || 0;
               
               // 成長段階を計算
               this.calculateStage();
@@ -250,7 +270,7 @@
       
       // デモデータを使用
       useDemoData: function() {
-        this.data.totalValue = Math.floor(Math.random() * 150);
+        this.data.totalMeetings = Math.floor(Math.random() * 150);
         this.calculateStage();
         this.updateDisplay();
         this.startGrowthAnimation();
@@ -258,21 +278,27 @@
       
       // 成長段階を計算
       calculateStage: function() {
-        // 0〜150の値を30段階に変換
-        const maxValue = 150;
-        const totalStages = 30;
+        // 現在の交流回数から適切な段階を特定
+        const meetingsCount = this.data.totalMeetings;
         
-        if (this.data.totalValue >= maxValue) {
-          this.data.currentStage = totalStages;
-        } else {
-          this.data.currentStage = Math.floor((this.data.totalValue / maxValue) * totalStages);
+        // 設定された段階から適切なものを見つける
+        let newStage = 0;
+        for (let i = 0; i < this.config.stages.length; i++) {
+          if (meetingsCount >= this.config.stages[i]) {
+            newStage = i;
+          } else {
+            break;
+          }
         }
+        
+        this.data.currentStage = newStage;
+        console.log(`交流回数 ${meetingsCount} で段階 ${newStage} に設定しました`);
       },
       
       // 表示を更新
       updateDisplay: function() {
         this.elements.stageDisplay.textContent = this.data.currentStage;
-        this.elements.totalValueDisplay.textContent = this.data.totalValue;
+        this.elements.totalValueDisplay.textContent = this.data.totalMeetings;
       },
       
       // 成長アニメーションを開始

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>みんなで育てる友情の木</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>みんなで育てる友情の木</h1>
+      <p>友達と会った回数をもとに、みんなで木を育てよう！</p>
+    </header>
+    
+    <main>
+      <div class="tree-container">
+        <div class="season-selector">
+          <button class="season-btn" data-season="spring">🌸 春</button>
+          <button class="season-btn" data-season="summer">☀️ 夏</button>
+          <button class="season-btn" data-season="autumn">🍂 秋</button>
+          <button class="season-btn" data-season="winter">❄️ 冬</button>
+        </div>
+        
+        <div class="tree-display" id="tree-svg">
+          <!-- 木のSVGがここに表示されます -->
+        </div>
+        
+        <div class="tree-info">
+          <p>成長段階: <span id="stage-display">0</span>/30</p>
+          <p>合計交流回数: <span id="total-value-display">0</span></p>
+          <div id="growing-message" class="hidden">🌱 成長中... 🌱</div>
+        </div>
+      </div>
+      
+      <div class="control-panel">
+        <h2>設定</h2>
+        
+        <div class="settings-form">
+          <div class="form-group">
+            <label for="spreadsheet-id">GoogleスプレッドシートID:</label>
+            <input type="text" id="spreadsheet-id" placeholder="スプレッドシートIDを入力">
+          </div>
+          
+          <div class="form-group">
+            <label for="min-threshold">最小値:</label>
+            <input type="number" id="min-threshold" value="0">
+          </div>
+          
+          <div class="form-group">
+            <label for="max-threshold">最大値:</label>
+            <input type="number" id="max-threshold" value="150">
+          </div>
+          
+          <div class="form-group">
+            <label for="manual-value">手動入力（テスト用）:</label>
+            <input type="number" id="manual-value" value="0">
+          </div>
+          
+          <div class="button-group">
+            <button id="fetch-data-btn">データを取得</button>
+            <button id="demo-growth-btn">成長をデモする</button>
+            <button id="save-image-btn">画像として保存</button>
+          </div>
+        </div>
+      </div>
+    </main>
+    
+    <div id="welcome-guide" class="modal hidden">
+      <div class="modal-content">
+        <h2>友情の木へようこそ！</h2>
+        <p>このアプリでは、友達との交流を記録することで木が成長します。</p>
+        <p>使い方は簡単です：</p>
+        <ol>
+          <li>Googleフォームで友達と会った記録を入力します</li>
+          <li>このページでスプレッドシートIDを入力します</li>
+          <li>「データを取得」ボタンをクリックします</li>
+          <li>みんなの交流に応じて木が成長します！</li>
+        </ol>
+        <button id="guide-close-btn">始める</button>
+      </div>
+    </div>
+    
+    <footer>
+      <p>みんなの友情で育てる木 - クラスプロジェクト</p>
+    </footer>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

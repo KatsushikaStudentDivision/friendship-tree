@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>友情の木 - 管理画面</title>
   <style>
-    /* ★ここも見た目はお好みで調整してください★ */
+    /* お好みのスタイル */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; padding: 20px; color: #333; }
-    .container { max-width: 1000px; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); padding: 30px; }
+    .container { max-width: 1000px; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px; }
     h1 { color: #2c3e50; text-align: center; margin-bottom: 30px; border-bottom: 1px solid #eaeaea; padding-bottom: 15px; }
     .form-section { margin-bottom: 30px; background-color: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid #4caf50; }
     h2 { margin-bottom: 15px; color: #2c3e50; font-size: 1.4em; }
@@ -63,7 +63,7 @@
         <h2>基本設定</h2>
         <div class="form-group">
           <label for="api-url">Google Apps Script API URL:</label>
-          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbxH8IbsSiynGQu0mwK2MJ7lJHRTt9Ynjq9oclUwegnDl8JT49GCJ5qvOkfHfZv3sxfWhQ/exec">
+          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbzUnABmPNBSXlVtMtbLnMgQiXkvVXXHFkI07kvBInj3dE6KM82YDGUz2vKNkkclHPhB/exec">
           <small>※ GASをWebアプリとしてデプロイしたURLを入力してください</small>
         </div>
       </div>
@@ -72,7 +72,7 @@
     <div id="stage-settings" class="tab-content">
       <div class="form-section">
         <h2>成長段階の設定</h2>
-        <p>各成長段階に必要な交流回数を設定します。例：段階3を表示するには交流回数15回以上必要</p>
+        <p>各成長段階に必要な交流回数を設定します。例：段階3は交流回数15回以上で表示</p>
         
         <div class="stage-settings">
           <div class="stage-settings-header">
@@ -148,10 +148,9 @@
   </footer>
   
   <script>
-    // adminApp は管理画面で設定を編集・保存するためのオブジェクトです
     const adminApp = {
       config: {
-        apiUrl: 'https://script.google.com/macros/s/AKfycbxH8IbsSiynGQu0mwK2MJ7lJHRTt9Ynjq9oclUwegnDl8JT49GCJ5qvOkfHfZv3sxfWhQ/exec',
+        apiUrl: 'https://script.google.com/macros/s/AKfycbzUnABmPNBSXlVtMtbLnMgQiXkvVXXHFkI07kvBInj3dE6KM82YDGUz2vKNkkclHPhB/exec',
         stages: [],
         images: []
       },
@@ -176,20 +175,16 @@
         tabContents: document.querySelectorAll('.tab-content')
       },
       
-      // 初期化
       init: function() {
-        // GASから設定を読み込む
-        this.loadConfig();
-        // UI更新
+        this.loadConfig(); // GASから設定を取得（GET with ?action=getConfig）
         this.updateUI();
-        // イベントリスナー設定
         this.setupEventListeners();
       },
       
-      // GASから設定を読み込む（GETリクエスト）
+      // GASから設定取得
       loadConfig: function() {
         if (this.config.apiUrl) {
-          fetch(this.config.apiUrl)
+          fetch(this.config.apiUrl + '?action=getConfig')
             .then(response => response.json())
             .then(data => {
               this.config = { ...this.config, ...data };
@@ -197,11 +192,11 @@
               this.updateUI();
             })
             .catch(error => {
-              console.error('設定の取得に失敗しました:', error);
+              console.error('設定取得に失敗:', error);
               this.showErrorMessage('サーバーからの設定取得に失敗しました。');
             });
         } else {
-          console.log('API URLが設定されていないため、ローカルのデフォルト値を使用します。');
+          console.log('API URL未設定のため、ローカルのデフォルト値使用');
           if (!this.config.stages || !Array.isArray(this.config.stages) || this.config.stages.length === 0) {
             this.setupDefaultStages();
           }
@@ -211,7 +206,6 @@
         }
       },
       
-      // デフォルトの段階設定
       setupDefaultStages: function() {
         this.config.stages = [];
         const maxMeetings = 150;
@@ -222,7 +216,6 @@
         }
       },
       
-      // 段階を均等に自動設定
       autoDistributeStages: function() {
         const maxMeetings = parseInt(this.elements.maxMeetingsInput.value) || 150;
         const totalStages = 30;
@@ -234,7 +227,6 @@
         this.updateStageSettings();
       },
       
-      // UI更新
       updateUI: function() {
         this.elements.apiUrlInput.value = this.config.apiUrl || '';
         this.elements.maxMeetingsInput.value = Math.max(...this.config.stages) || 150;
@@ -243,7 +235,6 @@
         this.updateImageGrid();
       },
       
-      // 段階選択ドロップダウン更新
       updateStageSelector: function() {
         this.elements.stageSelector.innerHTML = '';
         for (let i = 0; i <= 30; i++) {
@@ -254,7 +245,6 @@
         }
       },
       
-      // 段階設定表更新
       updateStageSettings: function() {
         this.elements.stageRowsContainer.innerHTML = '';
         for (let i = 0; i <= 30; i++) {
@@ -281,7 +271,6 @@
         }
       },
       
-      // 画像グリッド更新
       updateImageGrid: function() {
         this.elements.imageGrid.innerHTML = '';
         this.config.images.forEach((imageUrl, index) => {
@@ -310,7 +299,6 @@
         });
       },
       
-      // タブ切り替え
       activateTab: function(tabId) {
         this.elements.tabs.forEach(tab => tab.classList.remove('active'));
         this.elements.tabContents.forEach(content => content.classList.remove('active'));
@@ -322,7 +310,6 @@
         }
       },
       
-      // イベントリスナー設定
       setupEventListeners: function() {
         this.elements.tabs.forEach(tab => {
           tab.addEventListener('click', () => {
@@ -361,7 +348,6 @@
         });
       },
       
-      // 画像アップロード処理
       handleImageUpload: function(file) {
         if (!file) return;
         if (!file.type.startsWith('image/')) {
@@ -378,13 +364,12 @@
           this.elements.imageUrlInput.value = imageData;
         };
         reader.onerror = (error) => {
-          console.error('画像の読み込みに失敗しました:', error);
-          this.showErrorMessage('画像の読み込みに失敗しました。別の画像を試してください。');
+          console.error('画像読み込み失敗:', error);
+          this.showErrorMessage('画像の読み込みに失敗しました。');
         };
         reader.readAsDataURL(file);
       },
       
-      // 段階画像の保存（GASへ保存するため、保存後はサーバー更新を促す）
       saveStageImage: function() {
         const stageIndex = parseInt(this.elements.stageSelector.value);
         const imageUrl = this.elements.imageUrlInput.value.trim();
@@ -392,7 +377,7 @@
           this.config.images.push('');
         }
         this.config.images[stageIndex] = imageUrl;
-        // ここではGASへ保存するのは「設定保存」と同じ処理で実施するため、saveSettings()で送信します
+        // 保存は saveSettings() で GAS に POST リクエスト
         this.saveSettings();
         this.updateImageGrid();
         this.showSuccessMessage('段階 ' + stageIndex + ' の画像が保存されました！');
@@ -400,7 +385,6 @@
         this.elements.imageUploadInput.value = '';
       },
       
-      // 設定保存（GASへPOSTリクエスト）
       saveSettings: function() {
         this.config.apiUrl = this.elements.apiUrlInput.value.trim();
         const stageInputs = document.querySelectorAll('.stage-input');
@@ -421,13 +405,13 @@
         .then(response => response.json())
         .then(data => {
           if (data.status === 'success') {
-            this.showSuccessMessage('すべての設定が保存されました！メイン画面で反映されます。');
+            this.showSuccessMessage('すべての設定が保存されました！メイン画面に反映されます。');
           } else {
             this.showErrorMessage('保存エラー: ' + data.message);
           }
         })
         .catch(error => {
-          console.error('Error:', error);
+          console.error('保存エラー:', error);
           this.showErrorMessage('設定の保存に失敗しました。');
         })
         .finally(() => {

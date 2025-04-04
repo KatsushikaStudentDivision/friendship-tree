@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>みんなで育てる友情の木</title>
   <style>
-    /* ★ここはお好みのスタイルです★ */
+    /* お好みのスタイル */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; align-items: center; justify-content: center; }
     .container { max-width: 800px; width: 100%; text-align: center; padding: 20px; }
@@ -50,13 +50,12 @@
   <a href="admin.html" class="admin-link">管理</a>
   
   <script>
-    // ★ treeApp はメイン画面の動作と表示に関するオブジェクトです ★
     const treeApp = {
       config: {
-        // GASのWebアプリURLをデフォルト設定（管理画面と同じURLにしてください）
-        apiUrl: 'https://script.google.com/macros/s/AKfycbxH8IbsSiynGQu0mwK2MJ7lJHRTt9Ynjq9oclUwegnDl8JT49GCJ5qvOkfHfZv3sxfWhQ/exec',
-        stages: [], // 必要な交流回数の段階設定
-        images: []  // 各段階の画像URL
+        // GASのWebアプリURL（※ 管理画面と同じURLにしてください）
+        apiUrl: 'https://script.google.com/macros/s/AKfycbzUnABmPNBSXlVtMtbLnMgQiXkvVXXHFkI07kvBInj3dE6KM82YDGUz2vKNkkclHPhB/exec',
+        stages: [],
+        images: []
       },
       data: {
         totalMeetings: 0,
@@ -74,26 +73,20 @@
       animationInProgress: false,
       animationComplete: false,
       
-      // 初期化
       init: function() {
-        // GASから設定を読み込む
-        this.loadConfig();
-        // APIから最新データを取得
-        this.fetchData();
-        // 定期的に最新データを取得（30秒ごと）
+        this.loadConfig(); // GASから設定（画像URLなど）を取得
+        this.fetchData();  // スプレッドシートのデータを取得
         setInterval(() => this.fetchData(), 30000);
       },
       
-      // GASから設定を取得（GETリクエスト）
+      // GASから設定取得（GET with action=getConfig）
       loadConfig: function() {
         if (this.config.apiUrl) {
-          fetch(this.config.apiUrl)
+          fetch(this.config.apiUrl + '?action=getConfig')
             .then(response => response.json())
             .then(data => {
-              // サーバーから取得した設定を反映
               this.config = { ...this.config, ...data };
               console.log('サーバーから設定を読み込みました:', this.config);
-              // 設定がない場合はデフォルト値をセット
               if (!this.config.stages || !Array.isArray(this.config.stages) || this.config.stages.length === 0) {
                 this.setupDefaultStages();
               }
@@ -103,13 +96,12 @@
               this.updateDisplay();
             })
             .catch(error => {
-              console.error('設定の取得に失敗しました:', error);
+              console.error('設定取得に失敗:', error);
               this.showError('サーバーからの設定取得に失敗しました');
             });
         }
       },
       
-      // デフォルトの段階設定
       setupDefaultStages: function() {
         this.config.stages = [];
         const maxMeetings = 150;
@@ -121,22 +113,20 @@
         console.log('デフォルトの段階設定を作成しました');
       },
       
-      // デフォルト画像の設定
       setupDefaultImages: function() {
         this.config.images = [];
         for (let i = 0; i <= 30; i++) {
-          // プレースホルダー画像（必要に応じて変更してください）
           this.config.images.push(`https://via.placeholder.com/500x500.png?text=Growth+Stage+${i}`);
         }
         console.log('デフォルトの画像設定を作成しました');
       },
       
-      // APIからデータを取得
+      // スプレッドシートからデータを取得（GET with action=getData）
       fetchData: function() {
         this.elements.loading.style.display = 'block';
         this.hideError();
         if (this.config.apiUrl) {
-          fetch(this.config.apiUrl)
+          fetch(this.config.apiUrl + '?action=getData')
             .then(response => {
               if (!response.ok) {
                 throw new Error(`APIレスポンスエラー: ${response.status} ${response.statusText}`);
@@ -147,7 +137,7 @@
               if (data.error) {
                 throw new Error(`APIエラー: ${data.message}`);
               }
-              console.log('APIからデータを取得しました:', data);
+              console.log('APIからデータ取得:', data);
               this.data.apiResponse = data;
               this.data.totalMeetings = data.totalMeetings || 0;
               this.calculateStage();
@@ -158,21 +148,20 @@
               }
             })
             .catch(error => {
-              console.error('データの取得に失敗しました:', error);
-              this.showError(`データの取得に失敗しました: ${error.message}`);
+              console.error('データ取得失敗:', error);
+              this.showError(`データ取得に失敗: ${error.message}`);
               this.useDemoData();
             })
             .finally(() => {
               this.elements.loading.style.display = 'none';
             });
         } else {
-          console.log('API URLが設定されていないため、デモデータを使用します');
+          console.log('API URL未設定：デモデータ使用');
           this.useDemoData();
           this.elements.loading.style.display = 'none';
         }
       },
       
-      // デモデータ使用（エラー時など）
       useDemoData: function() {
         this.data.totalMeetings = Math.floor(Math.random() * 150);
         this.calculateStage();
@@ -184,11 +173,10 @@
         }
       },
       
-      // 成長段階の計算
       calculateStage: function() {
         const meetingsCount = this.data.totalMeetings;
         let newStage = 0;
-        console.log(`現在の交流回数: ${meetingsCount}`);
+        console.log(`交流回数: ${meetingsCount}`);
         for (let i = 0; i < this.config.stages.length; i++) {
           const requiredMeetings = this.config.stages[i];
           if (meetingsCount >= requiredMeetings) {
@@ -198,16 +186,14 @@
           }
         }
         this.data.currentStage = newStage;
-        console.log(`計算結果: 交流回数 ${meetingsCount} で段階 ${newStage} に設定しました`);
+        console.log(`段階: ${newStage}`);
       },
       
-      // 画面表示の更新
       updateDisplay: function() {
         this.elements.stageDisplay.textContent = this.data.currentStage;
         this.elements.totalValueDisplay.textContent = this.data.totalMeetings;
       },
       
-      // 成長アニメーション開始
       startGrowthAnimation: function() {
         this.animationComplete = false;
         this.animationInProgress = false;
@@ -224,7 +210,6 @@
         this.showSlide(0);
       },
       
-      // 最終段階のみ表示（アニメーション終了後）
       showFinalStage: function() {
         this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => img.remove());
         const img = document.createElement('img');
@@ -234,7 +219,6 @@
         this.elements.treeContainer.appendChild(img);
       },
       
-      // スライドショー処理
       showSlide: function(index) {
         if (this.animationInProgress) {
           setTimeout(() => this.showSlide(index), 100);
@@ -251,11 +235,10 @@
         } else {
           this.animationInProgress = false;
           this.animationComplete = true;
-          console.log('スライドショーが終了しました');
+          console.log('スライドショー終了');
         }
       },
       
-      // エラー表示
       showError: function(message) {
         this.elements.errorMessage.textContent = message;
         this.elements.errorMessage.style.display = 'block';

@@ -5,124 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>みんなで育てる友情の木</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    
-    body {
-      font-family: 'Helvetica Neue', Arial, sans-serif;
-      background-color: #f8f9fa;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .container {
-      max-width: 800px;
-      width: 100%;
-      text-align: center;
-      padding: 20px;
-    }
-    
-    h1 {
-      color: #2c3e50;
-      margin-bottom: 30px;
-      font-size: 28px;
-    }
-    
-    .tree-container {
-      background-color: #fff;
-      border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-      margin-bottom: 20px;
-      position: relative;
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      aspect-ratio: 1 / 1;
-      overflow: hidden;
-    }
-    
-    .tree-image {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      transition: opacity 1.5s ease-in-out;
-      object-fit: contain;
-    }
-    
-    .tree-image.active {
-      opacity: 1;
-    }
-    
-    .growth-info {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #e8f5e9;
-      border-radius: 8px;
-      display: inline-block;
-    }
-    
-    .loading {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-    
-    .spinner {
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-radius: 50%;
-      border-top: 4px solid #4caf50;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin: 0 auto 10px;
-    }
-    
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-    
-    .error-message {
-      color: #d32f2f;
-      background-color: #ffebee;
-      padding: 10px;
-      border-radius: 4px;
-      margin-top: 10px;
-      display: none;
-    }
-    
-    footer {
-      margin-top: 20px;
-      color: #7f8c8d;
-      font-size: 12px;
-      text-align: center;
-      padding: 10px;
-    }
-    
-    .admin-link {
-      position: fixed;
-      bottom: 5px;
-      right: 5px;
-      color: #ccc;
-      font-size: 10px;
-      text-decoration: none;
-    }
-    
-    .admin-link:hover {
-      color: #999;
-    }
+    /* ★ここはお好みのスタイルです★ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f8f9fa; display: flex; flex-direction: column; min-height: 100vh; align-items: center; justify-content: center; }
+    .container { max-width: 800px; width: 100%; text-align: center; padding: 20px; }
+    h1 { color: #2c3e50; margin-bottom: 30px; font-size: 28px; }
+    .tree-container { background-color: #fff; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); padding: 20px; margin-bottom: 20px; position: relative; width: 100%; max-width: 500px; aspect-ratio: 1 / 1; overflow: hidden; }
+    .tree-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.5s ease-in-out; object-fit: contain; }
+    .tree-image.active { opacity: 1; }
+    .growth-info { margin-top: 20px; padding: 10px; background-color: #e8f5e9; border-radius: 8px; display: inline-block; }
+    .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+    .spinner { border: 4px solid rgba(0, 0, 0, 0.1); border-radius: 50%; border-top: 4px solid #4caf50; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .error-message { color: #d32f2f; background-color: #ffebee; padding: 10px; border-radius: 4px; margin-top: 10px; display: none; }
+    footer { margin-top: 20px; color: #7f8c8d; font-size: 12px; text-align: center; padding: 10px; }
+    .admin-link { position: fixed; bottom: 5px; right: 5px; color: #ccc; font-size: 10px; text-decoration: none; }
+    .admin-link:hover { color: #999; }
   </style>
 </head>
 <body>
@@ -152,12 +50,13 @@
   <a href="admin.html" class="admin-link">管理</a>
   
   <script>
-    // 設定とデータを保持するオブジェクト
+    // ★ treeApp はメイン画面の動作と表示に関するオブジェクトです ★
     const treeApp = {
       config: {
-        apiUrl: '',
-        stages: [], // 各段階に必要な交流回数を保存する配列
-        images: [] // 各段階の画像URL
+        // GASのWebアプリURLをデフォルト設定（管理画面と同じURLにしてください）
+        apiUrl: 'https://script.google.com/macros/s/AKfycbyphskolcfSwbGCfJ8XJQ9ymPLw2eK5f_7jgtJucl-jIRfmsgD5aSznaVOeY5zC4H3XHw/exec',
+        stages: [], // 必要な交流回数の段階設定
+        images: []  // 各段階の画像URL
       },
       data: {
         totalMeetings: 0,
@@ -177,79 +76,66 @@
       
       // 初期化
       init: function() {
-        // 設定を読み込む
+        // GASから設定を読み込む
         this.loadConfig();
-        
-        // データを取得
+        // APIから最新データを取得
         this.fetchData();
-        
-        // 30秒ごとに自動更新
+        // 定期的に最新データを取得（30秒ごと）
         setInterval(() => this.fetchData(), 30000);
       },
       
-      // 設定を読み込む
+      // GASから設定を取得（GETリクエスト）
       loadConfig: function() {
-        const savedConfig = localStorage.getItem('treeAppConfig');
-        if (savedConfig) {
-          try {
-            const parsedConfig = JSON.parse(savedConfig);
-            this.config = { ...this.config, ...parsedConfig };
-            console.log('設定を読み込みました');
-          } catch (error) {
-            console.error('設定の読み込みに失敗しました:', error);
-            this.showError('設定の読み込みに失敗しました');
-          }
-        } else {
-          console.log('保存された設定がありません。デフォルト値を使用します。');
-        }
-        
-        // ステージ設定がない場合はデフォルト値を設定
-        if (!this.config.stages || !Array.isArray(this.config.stages) || this.config.stages.length === 0) {
-          this.setupDefaultStages();
-        }
-        
-        // 画像の設定がない場合はデフォルト値を設定
-        if (!this.config.images || !Array.isArray(this.config.images) || this.config.images.length === 0) {
-          this.setupDefaultImages();
+        if (this.config.apiUrl) {
+          fetch(this.config.apiUrl)
+            .then(response => response.json())
+            .then(data => {
+              // サーバーから取得した設定を反映
+              this.config = { ...this.config, ...data };
+              console.log('サーバーから設定を読み込みました:', this.config);
+              // 設定がない場合はデフォルト値をセット
+              if (!this.config.stages || !Array.isArray(this.config.stages) || this.config.stages.length === 0) {
+                this.setupDefaultStages();
+              }
+              if (!this.config.images || !Array.isArray(this.config.images) || this.config.images.length === 0) {
+                this.setupDefaultImages();
+              }
+              this.updateDisplay();
+            })
+            .catch(error => {
+              console.error('設定の取得に失敗しました:', error);
+              this.showError('サーバーからの設定取得に失敗しました');
+            });
         }
       },
       
       // デフォルトの段階設定
       setupDefaultStages: function() {
         this.config.stages = [];
-        
-        // デフォルトでは0〜150を30段階に均等に分ける
         const maxMeetings = 150;
         const totalStages = 30;
-        
         for (let i = 0; i <= totalStages; i++) {
           const meetingsRequired = Math.floor((i / totalStages) * maxMeetings);
           this.config.stages.push(meetingsRequired);
         }
-        
         console.log('デフォルトの段階設定を作成しました');
       },
       
-      // デフォルト画像を設定
+      // デフォルト画像の設定
       setupDefaultImages: function() {
         this.config.images = [];
-        
-        // 30段階のデフォルト画像URLを生成
         for (let i = 0; i <= 30; i++) {
-          // ここではプレースホルダー画像を使用
+          // プレースホルダー画像（必要に応じて変更してください）
           this.config.images.push(`https://via.placeholder.com/500x500.png?text=Growth+Stage+${i}`);
         }
-        
         console.log('デフォルトの画像設定を作成しました');
       },
       
-      // データを取得
+      // APIからデータを取得
       fetchData: function() {
         this.elements.loading.style.display = 'block';
         this.hideError();
-        
         if (this.config.apiUrl) {
-          // APIからデータを取得
           fetch(this.config.apiUrl)
             .then(response => {
               if (!response.ok) {
@@ -261,101 +147,72 @@
               if (data.error) {
                 throw new Error(`APIエラー: ${data.message}`);
               }
-              
               console.log('APIからデータを取得しました:', data);
               this.data.apiResponse = data;
-              
-              // データを保存
               this.data.totalMeetings = data.totalMeetings || 0;
-              
-              // 成長段階を計算
               this.calculateStage();
-              
-              // 表示を更新
               this.updateDisplay();
-              
-              // 初回またはステージが変わった場合のみアニメーションを開始
               const oldStage = parseInt(this.elements.stageDisplay.textContent) || 0;
               if (!this.animationComplete || oldStage !== this.data.currentStage) {
-                // 成長アニメーションを開始
                 this.startGrowthAnimation();
               }
             })
             .catch(error => {
               console.error('データの取得に失敗しました:', error);
               this.showError(`データの取得に失敗しました: ${error.message}`);
-              // エラーの場合はデモデータを使用
               this.useDemoData();
             })
             .finally(() => {
               this.elements.loading.style.display = 'none';
             });
         } else {
-          // API URLが設定されていない場合はデモデータを使用
           console.log('API URLが設定されていないため、デモデータを使用します');
           this.useDemoData();
           this.elements.loading.style.display = 'none';
         }
       },
       
-      // デモデータを使用
+      // デモデータ使用（エラー時など）
       useDemoData: function() {
         this.data.totalMeetings = Math.floor(Math.random() * 150);
         this.calculateStage();
         this.updateDisplay();
-        
         if (!this.animationComplete) {
           this.startGrowthAnimation();
         } else {
-          // アニメーションが完了している場合は最終段階のみ表示
           this.showFinalStage();
         }
       },
       
-      // 成長段階を計算
+      // 成長段階の計算
       calculateStage: function() {
-        // 現在の交流回数から適切な段階を特定
         const meetingsCount = this.data.totalMeetings;
-        
-        // 設定された段階から適切なものを見つける
         let newStage = 0;
-        
         console.log(`現在の交流回数: ${meetingsCount}`);
-        
         for (let i = 0; i < this.config.stages.length; i++) {
           const requiredMeetings = this.config.stages[i];
-          
           if (meetingsCount >= requiredMeetings) {
             newStage = i;
           } else {
             break;
           }
         }
-        
         this.data.currentStage = newStage;
         console.log(`計算結果: 交流回数 ${meetingsCount} で段階 ${newStage} に設定しました`);
       },
       
-      // 表示を更新
+      // 画面表示の更新
       updateDisplay: function() {
         this.elements.stageDisplay.textContent = this.data.currentStage;
         this.elements.totalValueDisplay.textContent = this.data.totalMeetings;
       },
       
-      // 成長アニメーションを開始
+      // 成長アニメーション開始
       startGrowthAnimation: function() {
-        // アニメーション完了フラグをリセット
         this.animationComplete = false;
         this.animationInProgress = false;
-        
-        // 既存の画像を削除
-        this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => {
-          img.remove();
-        });
-        
+        this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => img.remove());
         this.imageElements = [];
-        
-        // 0から現在の段階までの画像を追加
         for (let i = 0; i <= this.data.currentStage; i++) {
           const img = document.createElement('img');
           img.src = this.config.images[i] || `https://via.placeholder.com/500x500.png?text=Growth+Stage+${i}`;
@@ -364,19 +221,12 @@
           this.elements.treeContainer.appendChild(img);
           this.imageElements.push(img);
         }
-        
-        // スライドショーを開始
         this.showSlide(0);
       },
       
-      // 最終段階のみを表示（スライドショーなし）
+      // 最終段階のみ表示（アニメーション終了後）
       showFinalStage: function() {
-        // 既存の画像を削除
-        this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => {
-          img.remove();
-        });
-        
-        // 現在の段階の画像のみを追加
+        this.elements.treeContainer.querySelectorAll('.tree-image').forEach(img => img.remove());
         const img = document.createElement('img');
         img.src = this.config.images[this.data.currentStage] || `https://via.placeholder.com/500x500.png?text=Growth+Stage+${this.data.currentStage}`;
         img.alt = `成長段階 ${this.data.currentStage}`;
@@ -384,53 +234,37 @@
         this.elements.treeContainer.appendChild(img);
       },
       
-      // スライドを表示
+      // スライドショー処理
       showSlide: function(index) {
-        // アニメーション実行中の場合は待機
         if (this.animationInProgress) {
           setTimeout(() => this.showSlide(index), 100);
           return;
         }
-        
         this.animationInProgress = true;
-        
-        // 前のスライドを非表示
-        this.imageElements.forEach(img => {
-          img.classList.remove('active');
-        });
-        
-        // 指定されたスライドを表示
+        this.imageElements.forEach(img => img.classList.remove('active'));
         if (this.imageElements[index]) {
           this.imageElements[index].classList.add('active');
         }
-        
-        // 次のスライドへ
         if (index < this.imageElements.length - 1) {
           this.animationInProgress = false;
-          setTimeout(() => {
-            this.showSlide(index + 1);
-          }, 2000); // 2秒後に次のスライドへ
+          setTimeout(() => this.showSlide(index + 1), 2000);
         } else {
-          // 最後のスライドの場合
           this.animationInProgress = false;
-          this.animationComplete = true; // アニメーション完了フラグをセット
+          this.animationComplete = true;
           console.log('スライドショーが終了しました');
         }
       },
       
-      // エラーメッセージを表示
+      // エラー表示
       showError: function(message) {
         this.elements.errorMessage.textContent = message;
         this.elements.errorMessage.style.display = 'block';
       },
-      
-      // エラーメッセージを非表示
       hideError: function() {
         this.elements.errorMessage.style.display = 'none';
       }
     };
     
-    // ページ読み込み時に初期化
     document.addEventListener('DOMContentLoaded', function() {
       treeApp.init();
     });

@@ -504,3 +504,16 @@ function loadFromLocalStorage() {
 
 // アプリを初期化
 document.addEventListener('DOMContentLoaded', init);
+
+// DOMがすべて読み込まれた後にもう一度設定する
+document.addEventListener('DOMContentLoaded', function() {
+  const welcomeGuide = document.getElementById('welcome-guide');
+  const guideCloseBtn = document.getElementById('guide-close-btn');
+  
+  if (guideCloseBtn && welcomeGuide) {
+    guideCloseBtn.onclick = function() {
+      welcomeGuide.style.display = 'none';
+      welcomeGuide.classList.add('hidden');
+    };
+  }
+});

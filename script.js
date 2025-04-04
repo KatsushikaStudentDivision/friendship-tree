@@ -55,19 +55,53 @@ function init() {
 // イベントリスナーの設定
 function setupEventListeners() {
   // データ取得ボタン
-  fetchDataBtn.addEventListener('click', () => {
-    const sheetId = spreadsheetIdInput.value.trim();
-    if (!sheetId) {
-      alert('スプレッドシートIDを入力してください');
+  fetchDataBtn.addEventListener('click', async () => {
+  const sheetId = spreadsheetIdInput.value.trim();
+  if (!sheetId) {
+    alert('スプレッドシートIDを入力してください');
+    return;
+  }
+  
+  try {
+    // ここに先ほどコピーしたWebアプリのURLを貼り付ける
+    const apiUrl = 'https://script.google.com/macros/s/AKfycby08zhOBKCiueNXeCT0D2SJKguMoZy6Du0BGBej0mHtJNqc1yxRnv-irG84kJpap3EH/exec';
+    
+    // ローディングメッセージを表示
+    growingMessage.textContent = "データを取得中...";
+    growingMessage.classList.remove('hidden');
+    
+    // APIからデータを取得
+    const response = await fetch(apiUrl);
+    
+    if (!response.ok) {
+      throw new Error('APIからのレスポンスが不正です');
+    }
+    
+    const data = await response.json();
+    
+    // エラーチェック
+    if (data.error) {
+      alert(`エラーが発生しました: ${data.message}`);
+      growingMessage.classList.add('hidden');
       return;
     }
     
-    // 本来はここでGoogleスプレッドシートからデータを取得しますが、
-    // 簡易版ではランダムな値を生成します
-    const randomValue = Math.floor(Math.random() * maxThreshold);
-    setTotalValue(randomValue);
-    alert(`データを取得しました: ${randomValue} （デモ用の値です）`);
-  });
+    // 取得したデータをセット
+    setTotalValue(data.totalMeetings);
+    
+    // 成功メッセージを表示
+    alert(`データを取得しました！\n合計交流回数: ${data.totalMeetings}\n記録数: ${data.recordCount}`);
+    
+    // ローディングメッセージを非表示
+    if (!isAnimating) {
+      growingMessage.classList.add('hidden');
+    }
+  } catch (error) {
+    console.error('データの取得に失敗しました:', error);
+    alert('データの取得に失敗しました。インターネット接続を確認するか、後でもう一度試してください。');
+    growingMessage.classList.add('hidden');
+  }
+});
   
   // 成長デモボタン
   demoGrowthBtn.addEventListener('click', demonstrateGrowth);

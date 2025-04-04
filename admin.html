@@ -488,3 +488,295 @@
         
         // 0〜30の段階を追加
         for (let i = 0; i <= 30; i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = `段階 ${i}`;
+          this.elements.stageSelector.appendChild(option);
+        }
+      },
+      
+      // 段階設定の表を更新
+      updateStageSettings: function() {
+        this.elements.stageRowsContainer.innerHTML = '';
+        
+        // 各段階の設定行を追加
+        for (let i = 0; i <= 30; i++) {
+          const row = document.createElement('div');
+          row.className = 'stage-row';
+          
+          const stageLabel = document.createElement('div');
+          stageLabel.textContent = `段階 ${i}`;
+          
+          const inputContainer = document.createElement('div');
+          
+          const input = document.createElement('input');
+          input.type = 'number';
+          input.min = '0';
+          input.className = 'stage-input';
+          input.value = this.config.stages[i] || 0;
+          input.dataset.stage = i;
+          input.addEventListener('change', (e) => {
+            const stage = parseInt(e.target.dataset.stage);
+            const value = parseInt(e.target.value) || 0;
+            this.config.stages[stage] = value;
+          });
+          
+          inputContainer.appendChild(input);
+          row.appendChild(stageLabel);
+          row.appendChild(inputContainer);
+          
+          this.elements.stageRowsContainer.appendChild(row);
+        }
+      },
+      
+      // 画像グリッドを更新
+      updateImageGrid: function() {
+        this.elements.imageGrid.innerHTML = '';
+        
+        // 各段階の画像をグリッドに追加
+        this.config.images.forEach((imageUrl, index) => {
+          // 段階0〜30のみ表示
+          if (index > 30) return;
+          
+          const imageItem = document.createElement('div');
+          imageItem.className = 'image-item';
+          
+          const stageNumber = document.createElement('div');
+          stageNumber.className = 'stage-number';
+          stageNumber.textContent = `段階 ${index}`;
+          
+          const img = document.createElement('img');
+          if (imageUrl) {
+            img.src = imageUrl;
+          } else {
+            img.src = `https://via.placeholder.com/150x150.png?text=Stage+${index}`;
+          }
+          img.alt = `成長段階 ${index}`;
+          
+          const editBtn = document.createElement('button');
+          editBtn.textContent = '編集';
+          editBtn.className = 'btn-small';
+          editBtn.addEventListener('click', () => {
+            // 該当する段階を選択状態にする
+            this.elements.stageSelector.value = index;
+            this.elements.imageUrlInput.value = imageUrl || '';
+            this.elements.imageUrlInput.focus();
+            
+            // 画像設定タブをアクティブに
+            this.activateTab('image-settings');
+          });
+          
+          imageItem.appendChild(stageNumber);
+          imageItem.appendChild(img);
+          imageItem.appendChild(editBtn);
+          
+          this.elements.imageGrid.appendChild(imageItem);
+        });
+      },
+      
+      // タブをアクティブ化
+      activateTab: function(tabId) {
+        // タブと内容をすべて非アクティブ化
+        this.elements.tabs.forEach(tab => tab.classList.remove('active'));
+        this.elements.tabContents.forEach(content => content.classList.remove('active'));
+        
+        // 指定されたタブをアクティブ化
+        const targetTab = document.querySelector(`.tab[data-tab="${tabId}"]`);
+        const targetContent = document.getElementById(tabId);
+        
+        if (targetTab && targetContent) {
+          targetTab.classList.add('active');
+          targetContent.classList.add('active');
+        }
+      },
+      
+      // イベントリスナーを設定
+      setupEventListeners: function() {
+        // タブ切り替え
+        this.elements.tabs.forEach(tab => {
+          tab.addEventListener('click', () => {
+            const tabId = tab.getAttribute('data-tab');
+            this.activateTab(tabId);
+          });
+        });
+        
+        // 画像保存ボタン
+        this.elements.saveImageBtn.addEventListener('click', () => {
+          this.saveStageImage();
+        });
+        
+        // 設定保存ボタン
+        this.elements.saveSettingsBtn.addEventListener('click', () => {
+          this.saveSettings();
+        });
+        
+        // プレビューボタン
+        this.elements.previewBtn.addEventListener('click', () => {
+          // 新しいタブでメイン画面を開く
+          window.open('index.html', '_blank');
+        });
+        
+        // ホームボタン
+        this.elements.homeBtn.addEventListener('click', () => {
+          // メイン画面に戻る
+          window.location.href = 'index.html';
+        });
+        
+        // 画像アップロードの処理
+        this.elements.imageUploadInput.addEventListener('change', (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            this.handleImageUpload(file);
+          }
+        });
+        
+        // 段階設定リセットボタン
+        this.elements.resetStagesBtn.addEventListener('click', () => {
+          if (confirm('段階設定を初期値に戻しますか？')) {
+            this.setupDefaultStages();
+            this.updateStageSettings();
+            this.showSuccessMessage('段階設定を初期値にリセットしました');
+          }
+        });
+        
+        // 段階自動設定ボタン
+        this.elements.autoDistributeBtn.addEventListener('click', () => {
+          this.autoDistributeStages();
+          this.showSuccessMessage('段階設定を均等に自動設定しました');
+        });
+      },
+      
+      // 画像のアップロード処理
+      handleImageUpload: function(file) {
+        // ファイルがない場合は終了
+        if (!file) return;
+        
+        // 画像ファイルであることを確認
+        if (!file.type.startsWith('image/')) {
+          this.showErrorMessage('画像ファイルを選択してください');
+          return;
+        }
+        
+        // ファイルサイズチェック
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+          this.showErrorMessage('ファイルサイズが大きすぎます（最大5MB）');
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          // Base64形式の画像データ
+          const imageData = e.target.result;
+          
+          // 画像URLフィールドに設定
+          this.elements.imageUrlInput.value = imageData;
+        };
+        
+        reader.onerror = (error) => {
+          console.error('画像の読み込みに失敗しました:', error);
+          this.showErrorMessage('画像の読み込みに失敗しました。別の画像を試してください。');
+        };
+        
+        // 画像をBase64として読み込む
+        reader.readAsDataURL(file);
+      },
+      
+      // 段階画像を保存
+      saveStageImage: function() {
+        // 選択された段階
+        const stageIndex = parseInt(this.elements.stageSelector.value);
+        // 画像URL
+        const imageUrl = this.elements.imageUrlInput.value.trim();
+        
+        // 配列が十分な長さであることを確認
+        while (this.config.images.length <= stageIndex) {
+          this.config.images.push('');
+        }
+        
+        // 画像URLを保存
+        this.config.images[stageIndex] = imageUrl;
+        
+        // 設定を保存
+        this.saveConfigToStorage();
+        
+        // UI更新
+        this.updateImageGrid();
+        
+        // 成功メッセージを表示
+        this.showSuccessMessage('段階 ' + stageIndex + ' の画像が保存されました！');
+        
+        // フォームをリセット
+        this.elements.imageUrlInput.value = '';
+        this.elements.imageUploadInput.value = '';
+      },
+      
+      // 設定を保存
+      saveSettings: function() {
+        // フォームから値を取得
+        this.config.apiUrl = this.elements.apiUrlInput.value.trim();
+        
+        // 段階設定を収集
+        const stageInputs = document.querySelectorAll('.stage-input');
+        stageInputs.forEach(input => {
+          const stage = parseInt(input.dataset.stage);
+          const value = parseInt(input.value) || 0;
+          this.config.stages[stage] = value;
+        });
+        
+        // ローディング表示
+        this.elements.loader.style.display = 'block';
+        
+        // 設定を保存
+        this.saveConfigToStorage();
+        
+        // 少し待ってからローディングを非表示にし、成功メッセージを表示
+        setTimeout(() => {
+          this.elements.loader.style.display = 'none';
+          this.showSuccessMessage('すべての設定が保存されました！メイン画面で反映されます。');
+        }, 800);
+      },
+      
+      // 成功メッセージを表示
+      showSuccessMessage: function(message) {
+        this.elements.successMessage.textContent = message;
+        this.elements.successMessage.style.display = 'block';
+        this.elements.errorMessage.style.display = 'none';
+        
+        // 3秒後に非表示
+        setTimeout(() => {
+          this.elements.successMessage.style.display = 'none';
+        }, 3000);
+      },
+      
+      // エラーメッセージを表示
+      showErrorMessage: function(message) {
+        this.elements.errorMessage.textContent = message;
+        this.elements.errorMessage.style.display = 'block';
+        this.elements.successMessage.style.display = 'none';
+        
+        // 5秒後に非表示
+        setTimeout(() => {
+          this.elements.errorMessage.style.display = 'none';
+        }, 5000);
+      },
+      
+      // 設定をlocalStorageに保存
+      saveConfigToStorage: function() {
+        try {
+          localStorage.setItem('treeAppConfig', JSON.stringify(this.config));
+          console.log('設定を保存しました:', this.config);
+        } catch (error) {
+          console.error('設定の保存に失敗しました:', error);
+          this.showErrorMessage('設定の保存に失敗しました。ブラウザのストレージ容量が不足している可能性があります。');
+        }
+      }
+    };
+    
+    // ページ読み込み時に初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      adminApp.init();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>友情の木 - 管理画面</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f0f4f8;
+      padding: 20px;
+      color: #333;
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 30px;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid #eaeaea;
+      padding-bottom: 15px;
+    }
+    
+    .form-section {
+      margin-bottom: 30px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border-left: 4px solid #4caf50;
+    }
+    
+    h2 {
+      margin-bottom: 15px;
+      color: #2c3e50;
+      font-size: 1.4em;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    
+    input[type="text"],
+    input[type="url"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    input[type="file"] {
+      display: block;
+      margin-top: 5px;
+    }
+    
+    button {
+      padding: 12px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+    
+    button:hover {
+      background-color: #388e3c;
+    }
+    
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+    
+    .preview-btn {
+      background-color: #2196f3;
+    }
+    
+    .preview-btn:hover {
+      background-color: #1976d2;
+    }
+    
+    .home-btn {
+      background-color: #9e9e9e;
+    }
+    
+    .home-btn:hover {
+      background-color: #757575;
+    }
+    
+    .image-manager {
+      margin-top: 20px;
+    }
+    
+    .image-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .image-item {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      text-align: center;
+      position: relative;
+    }
+    
+    .image-item img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .image-item .stage-number {
+      font-weight: bold;
+    }
+    
+    .image-upload {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #e8f5e9;
+      border-radius: 4px;
+    }
+    
+    .success-message {
+      background-color: #e8f5e9;
+      color: #388e3c;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 4px;
+      text-align: center;
+      display: none;
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9rem;
+    }
+    
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 4px solid #4caf50;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>友情の木 - 管理画面</h1>
+    
+    <div class="form-section">
+      <h2>基本設定</h2>
+      <div class="form-group">
+        <label for="api-url">Google Apps Script API URL:</label>
+        <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec">
+        <small>※ Google Apps ScriptをWebアプリとしてデプロイしたURLを入力してください</small>
+      </div>
+      
+      <div class="form-group">
+        <label for="google-form-id">Google Form ID:</label>
+        <input type="text" id="google-form-id" placeholder="Googleフォームのスプレッドシート ID">
+        <small>※ スプレッドシートのURLから取得できるIDを入力してください</small>
+      </div>
+    </div>
+    
+    <div class="form-section">
+      <h2>成長段階の画像設定</h2>
+      <p>30段階の成長をスライドショーで表示するための画像を設定します。各段階ごとに画像をアップロードするか、画像URLを指定してください。</p>
+      
+      <div class="image-upload">
+        <label for="stage-selector">設定する成長段階:</label>
+        <select id="stage-selector">
+          <!-- JavaScriptで段階のオプションが追加されます -->
+        </select>
+        
+        <div class="form-group">
+          <label for="image-url">画像URL:</label>
+          <input type="url" id="image-url" placeholder="https://example.com/tree-image.jpg">
+        </div>
+        
+        <p>または</p>
+        
+        <div class="form-group">
+          <label for="image-upload">画像をアップロード:</label>
+          <input type="file" id="image-upload" accept="image/*">
+        </div>
+        
+        <button id="save-image-btn">この段階の画像を保存</button>
+      </div>
+      
+      <div class="image-manager">
+        <h3>登録済みの画像</h3>
+        <div class="image-grid" id="image-grid">
+          <!-- JavaScriptで画像が追加されます -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="loader" id="loader"></div>
+    <div class="success-message" id="success-message">設定が保存されました！</div>
+    
+    <div class="buttons">
+      <button id="save-settings-btn">すべての設定を保存</button>
+      <button id="preview-btn" class="preview-btn">メイン画面をプレビュー</button>
+      <button id="home-btn" class="home-btn">メイン画面に戻る</button>
+    </div>
+  </div>
+  
+  <footer>
+    友情の木 管理ツール - 設定変更はこの画面から行ってください
+  </footer>
+  
+  <script>
+    // 管理アプリケーション
+    const adminApp = {
+      config: {
+        apiUrl: '',
+        googleFormId: '',
+        images: []
+      },
+      elements: {
+        apiUrlInput: document.getElementById('api-url'),
+        googleFormIdInput: document.getElementById('google-form-id'),
+        stageSelector: document.getElementById('stage-selector'),
+        imageUrlInput: document.getElementById('image-url'),
+        imageUploadInput: document.getElementById('image-upload'),
+        saveImageBtn: document.getElementById('save-image-btn'),
+        imageGrid: document.getElementById('image-grid'),
+        saveSettingsBtn: document.getElementById('save-settings-btn'),
+        previewBtn: document.getElementById('preview-btn'),
+        homeBtn: document.getElementById('home-btn'),
+        loader: document.getElementById('loader'),
+        successMessage: document.getElementById('success-message')
+      },
+      
+      // 初期化
+      init: function() {
+        // 設定を読み込む
+        this.loadConfig();
+        
+        // UI更新
+        this.updateUI();
+        
+        // イベントリスナーを設定
+        this.setupEventListeners();
+      },
+      
+      // 設定を読み込む
+      loadConfig: function() {
+        const savedConfig = localStorage.getItem('treeAppConfig');
+        if (savedConfig) {
+          try {
+            const parsedConfig = JSON.parse(savedConfig);
+            this.config = { ...this.config, ...parsedConfig };
+          } catch (error) {
+            console.error('設定の読み込みに失敗しました:', error);
+          }
+        }
+        
+        // デフォルト画像配列を初期化
+        if (!this.config.images || !Array.isArray(this.config.images)) {
+          this.config.images = Array(31).fill(''); // 0〜30の段階用に31個の要素
+        }
+      },
+      
+      // UIを更新
+      updateUI: function() {
+        // 入力フィールドを更新
+        this.elements.apiUrlInput.value = this.config.apiUrl || '';
+        this.elements.googleFormIdInput.value = this.config.googleFormId || '';
+        
+        // 段階選択ドロップダウンを生成
+        this.updateStageSelector();
+        
+        // 画像グリッドを更新
+        this.updateImageGrid();
+      },
+      
+      // 段階選択ドロップダウンを更新
+      updateStageSelector: function() {
+        this.elements.stageSelector.innerHTML = '';
+        
+        // 0〜30の段階を追加
+        for (let i = 0; i <= 30; i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = `段階 ${i}`;
+          this.elements.stageSelector.appendChild(option);
+        }
+      },
+      
+      // 画像グリッドを更新
+      updateImageGrid: function() {
+        this.elements.imageGrid.innerHTML = '';
+        
+        // 各段階の画像をグリッドに追加
+        this.config.images.forEach((imageUrl, index) => {
+          // 段階0〜30のみ表示
+          if (index > 30) return;
+          
+          const imageItem = document.createElement('div');
+          imageItem.className = 'image-item';
+          
+          const stageNumber = document.createElement('div');
+          stageNumber.className = 'stage-number';
+          stageNumber.textContent = `段階 ${index}`;
+          
+          const img = document.createElement('img');
+          if (imageUrl) {
+            img.src = imageUrl;
+          } else {
+            img.src = `https://via.placeholder.com/150x150.png?text=Stage+${index}`;
+          }
+          img.alt = `成長段階 ${index}`;
+          
+          const editBtn = document.createElement('button');
+          editBtn.textContent = '編集';
+          editBtn.addEventListener('click', () => {
+            // 該当する段階を選択状態にする
+            this.elements.stageSelector.value = index;
+            this.elements.imageUrlInput.value = imageUrl || '';
+            this.elements.imageUrlInput.focus();
+          });
+          
+          imageItem.appendChild(stageNumber);
+          imageItem.appendChild(img);
+          imageItem.appendChild(editBtn);
+          
+          this.elements.imageGrid.appendChild(imageItem);
+        });
+      },
+      
+      // イベントリスナーを設定
+      setupEventListeners: function() {
+        // 画像保存ボタン
+        this.elements.saveImageBtn.addEventListener('click', () => {
+          this.saveStageImage();
+        });
+        
+        // 設定保存ボタン
+        this.elements.saveSettingsBtn.addEventListener('click', () => {
+          this.saveSettings();
+        });
+        
+        // プレビューボタン
+        this.elements.previewBtn.addEventListener('click', () => {
+          // 新しいタブでメイン画面を開く
+          window.open('index.html', '_blank');
+        });
+        
+        // ホームボタン
+        this.elements.homeBtn.addEventListener('click', () => {
+          // メイン画面に戻る
+          window.location.href = 'index.html';
+        });
+        
+        // 画像アップロードの処理
+        this.elements.imageUploadInput.addEventListener('change', (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            this.handleImageUpload(file);
+          }
+        });
+      },
+      
+      // 画像のアップロード処理
+      handleImageUpload: function(file) {
+        // ファイルがない場合は終了
+        if (!file) return;
+        
+        // 画像ファイルであることを確認
+        if (!file.type.startsWith('image/')) {
+          alert('画像ファイルを選択してください');
+          return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+          // Base64形式の画像データ
+          const imageData = e.target.result;
+          
+          // 画像URLフィールドに設定
+          this.elements.imageUrlInput.value = imageData;
+        };
+        
+        reader.onerror = (error) => {
+          console.error('画像の読み込みに失敗しました:', error);
+          alert('画像の読み込みに失敗しました。別の画像を試してください。');
+        };
+        
+        // 画像をBase64として読み込む
+        reader.readAsDataURL(file);
+      },
+      
+      // 段階画像を保存
+      saveStageImage: function() {
+        // 選択された段階
+        const stageIndex = parseInt(this.elements.stageSelector.value);
+        // 画像URL
+        const imageUrl = this.elements.imageUrlInput.value.trim();
+        
+        // 配列が十分な長さであることを確認
+        while (this.config.images.length <= stageIndex) {
+          this.config.images.push('');
+        }
+        
+        // 画像URLを保存
+        this.config.images[stageIndex] = imageUrl;
+        
+        // 設定を保存
+        this.saveConfigToStorage();
+        
+        // UI更新
+        this.updateImageGrid();
+        
+        // 成功メッセージを表示
+        this.showSuccessMessage('段階 ' + stageIndex + ' の画像が保存されました！');
+        
+        // フォームをリセット
+        this.elements.imageUrlInput.value = '';
+        this.elements.imageUploadInput.value = '';
+      },
+      
+      // 設定を保存
+      saveSettings: function() {
+        // フォームから値を取得
+        this.config.apiUrl = this.elements.apiUrlInput.value.trim();
+        this.config.googleFormId = this.elements.googleFormIdInput.value.trim();
+        
+        // ローディング表示
+        this.elements.loader.style.display = 'block';
+        
+        // 設定を保存
+        this.saveConfigToStorage();
+        
+        // 少し待ってからローディングを非表示にし、成功メッセージを表示
+        setTimeout(() => {
+          this.elements.loader.style.display = 'none';
+          this.showSuccessMessage('すべての設定が保存されました！メイン画面で反映されます。');
+        }, 800);
+      },
+      
+      // 成功メッセージを表示
+      showSuccessMessage: function(message) {
+        this.elements.successMessage.textContent = message;
+        this.elements.successMessage.style.display = 'block';
+        
+        // 3秒後に非表示
+        setTimeout(() => {
+          this.elements.successMessage.style.display = 'none';
+        }, 3000);
+      },
+      
+      // 設定をlocalStorageに保存
+      saveConfigToStorage: function() {
+        try {
+          localStorage.setItem('treeApp

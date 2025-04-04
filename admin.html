@@ -63,7 +63,7 @@
         <h2>基本設定</h2>
         <div class="form-group">
           <label for="api-url">Google Apps Script API URL:</label>
-          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbxw-ITipmUlzBCtYet9Ve5cs59dhXGcqxR87gNnMGVgGmjQ4xTppQzTG_nrydkKund_Yg/exec">
+          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbzWXiOs5_yCmsdd9jpcCgpqlI1tlmpqzt2-I0CQBN6qtdOX_V-_91MM7UtRmo_Z51z00Q/exec">
           <small>※ GASをWebアプリとしてデプロイしたURLを入力してください</small>
         </div>
       </div>
@@ -150,7 +150,7 @@
   <script>
     const adminApp = {
       config: {
-        apiUrl: 'https://script.google.com/macros/s/AKfycbxw-ITipmUlzBCtYet9Ve5cs59dhXGcqxR87gNnMGVgGmjQ4xTppQzTG_nrydkKund_Yg/exec',
+        apiUrl: 'https://script.google.com/macros/s/AKfycbzWXiOs5_yCmsdd9jpcCgpqlI1tlmpqzt2-I0CQBN6qtdOX_V-_91MM7UtRmo_Z51z00Q/exec',
         stages: [],
         images: []
       },
@@ -373,6 +373,11 @@
       saveStageImage: function() {
         const stageIndex = parseInt(this.elements.stageSelector.value);
         const imageUrl = this.elements.imageUrlInput.value.trim();
+        // チェック：Flickr のページ URL が入力されている場合はエラー表示
+        if (imageUrl.indexOf('flickr.com') !== -1 && !/\.(jpg|jpeg|png|gif)(\?.*)?$/i.test(imageUrl)) {
+          this.showErrorMessage("Flickr のページURLが入力されています。直接画像ファイル（例：.jpg, .png）の URL を入力してください。");
+          return;
+        }
         while (this.config.images.length <= stageIndex) {
           this.config.images.push('');
         }

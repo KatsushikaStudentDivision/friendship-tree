@@ -14,41 +14,42 @@
     h2 { margin-bottom: 15px; color: #2c3e50; font-size: 1.4em; }
     .form-group { margin-bottom: 15px; }
     label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
-    input[type="text"], input[type="url"], input[type="number"], textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
-    input[type="file"] { display: block; margin-top: 5px; }
+    input[type="text"], input[type="url"], input[type="number"], textarea, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+    input[type="file"] { display: block; margin-top: 5px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; background-color: white; }
     button { padding: 12px 20px; background-color: #4caf50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; transition: background-color 0.3s; }
-    button:hover { background-color: #388e3c; }
+    button:hover:not(:disabled) { background-color: #388e3c; } /* ホバー効果を無効でないボタンに限定 */
     button:disabled { background-color: #ccc; cursor: not-allowed; } /* disabledスタイル追加 */
-    .buttons { display: flex; justify-content: space-between; margin-top: 20px; }
+    .buttons { display: flex; justify-content: space-between; margin-top: 20px; flex-wrap: wrap; gap: 10px;} /* ボタン折り返し対応 */
     .preview-btn { background-color: #2196f3; }
-    .preview-btn:hover { background-color: #1976d2; }
+    .preview-btn:hover:not(:disabled) { background-color: #1976d2; }
     .home-btn { background-color: #9e9e9e; }
-    .home-btn:hover { background-color: #757575; }
+    .home-btn:hover:not(:disabled) { background-color: #757575; }
     .image-manager { margin-top: 20px; }
     .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
-    .image-item { border: 1px solid #ddd; border-radius: 4px; padding: 10px; text-align: center; position: relative; }
-    .image-item img { max-width: 100%; height: auto; display: block; margin-bottom: 5px; min-height: 100px; background-color:#eee; } /* min-height追加 */
-    .image-item .stage-number { font-weight: bold; }
-    .image-upload { margin-bottom: 10px; padding: 10px; background-color: #e8f5e9; border-radius: 4px; }
-    .success-message { background-color: #e8f5e9; color: #388e3c; padding: 15px; margin-top: 20px; border-radius: 4px; text-align: center; display: none; }
-    .error-message { background-color: #ffebee; color: #d32f2f; padding: 15px; margin-top: 20px; border-radius: 4px; text-align: center; display: none; }
+    .image-item { border: 1px solid #ddd; border-radius: 4px; padding: 10px; text-align: center; position: relative; background-color: #fff;}
+    .image-item img { max-width: 100%; height: auto; display: block; margin: 5px auto; min-height: 100px; object-fit: contain; background-color:#f0f0f0; } /* min-height, object-fit, margin調整 */
+    .image-item .stage-number { font-weight: bold; margin-bottom: 5px;}
+    .image-upload { margin-bottom: 10px; padding: 15px; background-color: #e8f5e9; border-radius: 4px; border: 1px solid #c8e6c9; }
+    .success-message { background-color: #e8f5e9; color: #388e3c; padding: 15px; margin-top: 20px; border-radius: 4px; text-align: center; display: none; border: 1px solid #a5d6a7;}
+    .error-message { background-color: #ffebee; color: #d32f2f; padding: 15px; margin-top: 20px; border-radius: 4px; text-align: center; display: none; border: 1px solid #ef9a9a;}
     footer { margin-top: 40px; text-align: center; color: #7f8c8d; font-size: 0.9rem; }
-    .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #4caf50; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; display: none; }
+    .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #4caf50; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; display: none; } /* スピード調整 */
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .stage-settings { margin-top: 20px; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
     .stage-settings-header { display: grid; grid-template-columns: 100px 1fr; background-color: #f1f8e9; padding: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
-    .stage-row { display: grid; grid-template-columns: 100px 1fr; padding: 8px 10px; border-bottom: 1px solid #eee; }
+    .stage-row { display: grid; grid-template-columns: 100px 1fr; padding: 8px 10px; border-bottom: 1px solid #eee; align-items: center;} /* align-items追加 */
     .stage-row:nth-child(even) { background-color: #f9f9f9; }
     .stage-row:last-child { border-bottom: none; }
-    .stage-input { width: 100%; max-width: 150px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; }
-    .btn-small { padding: 5px 10px; font-size: 14px; margin-left: 10px; }
-    .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
-    .tab { padding: 10px 20px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; margin-right: 5px; }
-    .tab.active { background-color: #fff; border-color: #ddd; border-bottom-color: #fff; margin-bottom: -1px; font-weight: bold; }
-    .tab-content { display: none; }
+    .stage-input { width: 100%; max-width: 150px; padding: 5px 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 1em;} /* font-size調整 */
+    .btn-small { padding: 5px 10px; font-size: 14px; margin-left: 10px; vertical-align: middle;} /* vertical-align追加 */
+    .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; flex-wrap: wrap; } /* flex-wrap追加 */
+    .tab { padding: 10px 20px; cursor: pointer; border: 1px solid transparent; border-bottom: none; border-radius: 4px 4px 0 0; margin-right: 5px; background-color: #e9e9e9; color: #555;}
+    .tab.active { background-color: #fff; border-color: #ddd; border-bottom-color: #fff; margin-bottom: -1px; font-weight: bold; color: #333;}
+    .tab-content { display: none; padding-top: 20px; border-top: 1px solid #ddd;}
     .tab-content.active { display: block; }
-    .file-info { font-size: 0.9em; color: #555; margin-top: 5px;} /* ファイル情報表示用 */
-    .upload-progress { margin-top: 10px; } /* アップロード進捗表示用 */
+    .file-info { font-size: 0.9em; color: #555; margin-top: 5px; min-height: 1.2em;} /* min-height追加 */
+    .upload-progress { margin-top: 10px; font-style: italic; color: #388e3c;}
+    small { display: block; margin-top: 4px; font-size: 0.85em; color: #666; } /* smallタグ調整 */
   </style>
 </head>
 <body>
@@ -66,8 +67,8 @@
         <h2>基本設定</h2>
         <div class="form-group">
           <label for="api-url">Google Apps Script API URL:</label>
-          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec" value="https://script.google.com/macros/s/AKfycbymFEfHHxILiMex51XBRWszk69AYM0scaTXv3CmcLeWXsj7g-Ol4Nem0otDUBQ8dNy55w/exec">
-          <small>※ GASをWebアプリとしてデプロイしたURLを入力してください</small>
+          <input type="url" id="api-url" placeholder="https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec">
+          <small>※ GASをWebアプリとしてデプロイしたURLを入力し、「すべての設定を保存」を押してください。</small>
         </div>
       </div>
     </div>
@@ -75,62 +76,63 @@
     <div id="stage-settings" class="tab-content">
       <div class="form-section">
         <h2>成長段階の設定</h2>
-        <p>各成長段階に必要な交流回数を設定します。例：段階3は交流回数15回以上で表示</p>
+        <p>各成長段階に到達するために必要な「友達との交流回数」の合計値を設定します。</p>
 
         <div class="stage-settings">
           <div class="stage-settings-header">
             <div>成長段階</div>
-            <div>必要な交流回数</div>
+            <div>必要な交流回数 (以上)</div>
           </div>
           <div id="stage-rows-container">
             </div>
         </div>
 
-        <div style="margin-top: 15px; display: flex; justify-content: space-between;">
-          <button id="reset-stages-btn" class="btn-small" style="background-color: #ff9800;">初期値にリセット</button>
-          <button id="auto-distribute-btn" class="btn-small" style="background-color: #2196f3;">均等に自動設定</button>
+        <div style="margin-top: 15px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div>
+                <button id="reset-stages-btn" class="btn-small" style="background-color: #ff9800;">初期値にリセット</button>
+                <button id="auto-distribute-btn" class="btn-small" style="background-color: #2196f3;">均等に自動設定</button>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;"> <label for="max-meetings" style="display: inline-block; margin-right: 5px; margin-bottom: 0;">最大交流回数:</label>
+              <input type="number" id="max-meetings" placeholder="例: 150" min="1" value="150" style="width: 80px; display: inline-block; padding: 5px 8px;">
+              <small style="display: inline;">※自動設定時に使用</small>
+            </div>
         </div>
-
-        <div class="form-group" style="margin-top: 20px;">
-          <label for="max-meetings">最大交流回数:</label>
-          <input type="number" id="max-meetings" placeholder="例: 150" min="30" value="150">
-          <small>※ 自動設定時に使用する最大交流回数</small>
-        </div>
+        <small>※ 設定変更後は「すべての設定を保存」を押してください。</small>
       </div>
     </div>
 
     <div id="image-settings" class="tab-content">
       <div class="form-section">
         <h2>成長段階の画像設定</h2>
-        <p>30段階の成長をスライドショーで表示するための画像を設定します。各段階ごとに画像をアップロードしてください（推奨）。URL指定も可能ですが、Google Driveへのアップロードが推奨されます。</p>
+        <p>30段階の成長に対応する画像を設定します。画像をアップロードするか、既存のURLやGoogle DriveファイルIDを指定してください。</p>
 
         <div class="image-upload">
-          <label for="stage-selector">設定する成長段階:</label>
+          <label for="stage-selector">設定/変更する成長段階:</label>
           <select id="stage-selector">
             </select>
 
-          <div class="form-group">
-             <label for="image-upload">画像をアップロード (推奨):</label>
+          <div class="form-group" style="margin-top: 15px;">
+             <label for="image-upload-input">新しい画像をアップロード:</label>
              <input type="file" id="image-upload-input" accept="image/png, image/jpeg, image/gif">
              <div id="file-info" class="file-info"></div>
-             <small>※ 推奨: PNG, JPG, GIF形式。ファイルサイズが大きい場合、アップロードに時間がかかることがあります。</small>
+             <button id="upload-image-btn" disabled style="margin-top: 5px;">選択した画像をアップロードして設定</button>
+             <div id="upload-progress" class="upload-progress"></div>
+             <small>※ 推奨: PNG, JPG, GIF形式。5MB以下推奨。</small>
           </div>
 
-          <p>または (非推奨: Driveアップロードを利用してください)</p>
+          <p style="text-align: center; margin: 15px 0;">または</p>
 
           <div class="form-group">
-            <label for="image-id-url">画像URL または Google Drive ファイルID:</label>
+            <label for="image-id-url-input">既存の画像URL または Google Drive ファイルID:</label>
             <input type="text" id="image-id-url-input" placeholder="https://.../image.jpg または DriveのファイルID">
+             <button id="set-id-url-btn" style="margin-top: 5px;">入力したURL/IDを設定</button>
+             <small>※ 画像をクリアする場合は入力欄を空にして設定ボタンを押します。</small>
           </div>
-
-          <button id="upload-image-btn" disabled>画像をアップロードして設定</button>
-          <button id="set-id-url-btn">URL/IDを設定</button>
-          <div id="upload-progress" class="upload-progress"></div>
-
+           <small>※ 設定変更後は「すべての設定を保存」を押して確定させてください。</small>
         </div>
 
         <div class="image-manager">
-          <h3>登録済みの画像</h3>
+          <h3>現在の画像設定</h3>
           <div class="image-grid" id="image-grid">
             </div>
         </div>
@@ -155,18 +157,18 @@
   <script>
     const adminApp = {
       config: {
-        apiUrl: 'https://script.google.com/macros/s/AKfycbymFEfHHxILiMex51XBRWszk69AYM0scaTXv3CmcLeWXsj7g-Ol4Nem0otDUBQ8dNy55w/exec', // 初期値
-        stages: [],
-        images: [] // ここには Drive File ID または 画像URL が入る
+        apiUrl: '', // ローカルストレージまたはデフォルト値から読み込む
+        stages: Array(31).fill(0), // 初期値を設定
+        images: Array(31).fill('')  // 初期値を設定
       },
       elements: {
         apiUrlInput: document.getElementById('api-url'),
         stageSelector: document.getElementById('stage-selector'),
-        imageUploadInput: document.getElementById('image-upload-input'), // ID変更
+        imageUploadInput: document.getElementById('image-upload-input'),
         fileInfo: document.getElementById('file-info'),
-        uploadImageBtn: document.getElementById('upload-image-btn'), // ID変更
-        imageIdUrlInput: document.getElementById('image-id-url-input'), // ID変更
-        setIdUrlBtn: document.getElementById('set-id-url-btn'), // 新設
+        uploadImageBtn: document.getElementById('upload-image-btn'),
+        imageIdUrlInput: document.getElementById('image-id-url-input'),
+        setIdUrlBtn: document.getElementById('set-id-url-btn'),
         uploadProgress: document.getElementById('upload-progress'),
         imageGrid: document.getElementById('image-grid'),
         saveSettingsBtn: document.getElementById('save-settings-btn'),
@@ -183,98 +185,100 @@
         tabContents: document.querySelectorAll('.tab-content')
       },
       selectedFile: null, // アップロード用に選択されたファイルを保持
+      whitePixel: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/7+98QAAAABJRU5ErkJggg==', // 白画像データ
 
       init: function() {
-        // API URLをローカルストレージから読み込むか、デフォルト値を使用
+        // API URLをローカルストレージから読み込むか、デフォルト値を使用 (例)
         const savedApiUrl = localStorage.getItem('treeAppApiUrl');
-        if (savedApiUrl) {
-            this.config.apiUrl = savedApiUrl;
-        }
-        this.elements.apiUrlInput.value = this.config.apiUrl; // inputにも反映
+        // ↓ 必要であればデフォルトのウェブアプリURLを設定
+        const defaultApiUrl = 'YOUR_DEFAULT_WEB_APP_URL_HERE'; // 例: 'https://script.google.com/macros/s/...'
+        this.config.apiUrl = savedApiUrl || defaultApiUrl;
+        this.elements.apiUrlInput.value = this.config.apiUrl;
 
-        this.loadConfig(); // GASから設定を取得
+        if (!this.config.apiUrl || this.config.apiUrl === 'YOUR_DEFAULT_WEB_APP_URL_HERE') {
+            this.showErrorMessage('API URLが設定されていません。「基本設定」タブで正しいURLを入力し、「すべての設定を保存」を押してください。');
+        }
+
+        this.updateStageSelector(); // セレクターを初期化
+        this.loadConfig(); // GASから設定を取得 (API URLが設定されていれば)
         this.setupEventListeners();
-        // 初期状態で画像設定タブのUIを更新しておく
-        this.updateStageSelector();
       },
 
-      // GASから設定取得 (変更なし)
       loadConfig: function() {
-        if (this.config.apiUrl) {
-          this.showLoader();
-          fetch(this.config.apiUrl + '?action=getConfig')
-            .then(response => response.json())
-            .then(data => {
-              // 保存されているAPI URLも更新する
-              if (data.apiUrl && data.apiUrl !== this.config.apiUrl) {
-                  this.config.apiUrl = data.apiUrl;
-                  this.elements.apiUrlInput.value = this.config.apiUrl;
-                  localStorage.setItem('treeAppApiUrl', this.config.apiUrl); // ローカルストレージにも保存
-              }
-              // stagesとimagesを読み込む（存在しない場合はデフォルトを設定）
-              this.config.stages = (data.stages && Array.isArray(data.stages)) ? data.stages : [];
-              this.config.images = (data.images && Array.isArray(data.images)) ? data.images : [];
-
-              // stagesやimagesの長さが足りない場合に備える
-              while (this.config.stages.length <= 30) this.config.stages.push(0);
-              while (this.config.images.length <= 30) this.config.images.push('');
-
-              if (this.config.stages.length === 1 && this.config.stages[0] === 0) { // 初期状態に近い場合
-                  this.setupDefaultStages();
-              }
-
-              console.log('サーバーから設定を読み込みました:', this.config);
-              this.updateUI(); // UI全体を更新
-            })
-            .catch(error => {
-              console.error('設定取得に失敗:', error);
-              this.showErrorMessage('サーバーからの設定取得に失敗しました。API URLを確認してください。');
-              // エラー時もデフォルト設定でUIを表示試みる
-              if (!this.config.stages || this.config.stages.length === 0) this.setupDefaultStages();
-              if (!this.config.images) this.config.images = Array(31).fill('');
-              this.updateUI();
-            })
-            .finally(() => {
-              this.hideLoader();
-            });
-        } else {
-          console.log('API URL未設定のため、ローカルのデフォルト値使用');
-          this.setupDefaultStages();
-          this.config.images = Array(31).fill('');
-          this.updateUI();
+        if (!this.config.apiUrl || this.config.apiUrl === 'YOUR_DEFAULT_WEB_APP_URL_HERE') {
+          console.warn('API URL未設定のため、設定読み込みをスキップします。');
+          this.updateUI(); // 現在のローカルconfigでUIを更新
+          return;
         }
+
+        this.showLoader('設定読み込み中...');
+        fetch(this.config.apiUrl + '?action=getConfig')
+          .then(response => {
+            if (!response.ok) throw new Error(`設定取得APIエラー: ${response.status}`);
+            return response.json();
+          })
+          .then(data => {
+            if (data.error) throw new Error(`設定取得エラー: ${data.message}`);
+
+            // stagesとimagesを読み込む（存在しない場合は初期値を維持）
+            this.config.stages = (data.stages && Array.isArray(data.stages) && data.stages.length > 0) ? data.stages : this.config.stages;
+            this.config.images = (data.images && Array.isArray(data.images)) ? data.images : this.config.images;
+
+            // 配列の長さが足りない場合に備える (31要素 = 0から30まで)
+            while (this.config.stages.length < 31) this.config.stages.push(0);
+            while (this.config.images.length < 31) this.config.images.push('');
+            // 長すぎる場合は切り詰める (任意)
+            this.config.stages = this.config.stages.slice(0, 31);
+            this.config.images = this.config.images.slice(0, 31);
+
+
+            console.log('サーバーから設定を読み込みました:', this.config);
+            this.updateUI(); // UI全体を更新
+          })
+          .catch(error => {
+            console.error('設定取得に失敗:', error);
+            this.showErrorMessage(`サーバーからの設定取得に失敗しました: ${error.message} API URLを確認してください。`);
+            this.updateUI(); // エラー時も現在のローカルconfigでUI表示試みる
+          })
+          .finally(() => {
+            this.hideLoader();
+          });
       },
 
       setupDefaultStages: function() {
-        this.config.stages = [];
+        // this.config.stages = []; // しない方が良い、既存の設定を上書きしない
         const maxMeetings = parseInt(this.elements.maxMeetingsInput.value) || 150;
+        if (maxMeetings <= 0) {
+            this.showErrorMessage('最大交流回数は1以上で設定してください。');
+            return []; // 不正な値の場合は空配列を返すなど
+        }
         const totalStages = 30;
-        for (let i = 0; i <= totalStages; i++) {
-          const meetingsRequired = Math.floor((i / totalStages) * maxMeetings);
-          this.config.stages.push(meetingsRequired);
+        const defaultStages = [];
+        defaultStages.push(0); // Stage 0 は常に 0
+        for (let i = 1; i <= totalStages; i++) {
+          const meetingsRequired = Math.max(1, Math.ceil((i / totalStages) * maxMeetings)); // 1以上、切り上げ
+          defaultStages.push(meetingsRequired);
         }
-        console.log('デフォルトの段階設定を作成');
-        // 必要であればUIも更新
-        if (document.getElementById('stage-settings').classList.contains('active')) {
-            this.updateStageSettings();
-        }
+        console.log('デフォルトの段階設定を作成:', defaultStages);
+        return defaultStages; // 生成した配列を返す
       },
 
       autoDistributeStages: function() {
-        const maxMeetings = parseInt(this.elements.maxMeetingsInput.value) || 150;
-        const totalStages = 30;
-        this.config.stages = [];
-        for (let i = 0; i <= totalStages; i++) {
-          const meetingsRequired = Math.floor((i / totalStages) * maxMeetings);
-          this.config.stages.push(meetingsRequired);
+        const newStages = this.setupDefaultStages(); // デフォルト値を生成
+        if (newStages.length > 0) {
+            this.config.stages = newStages; // configに反映
+            this.updateStageSettings(); // UI更新
         }
-        this.updateStageSettings(); // UI更新
       },
 
       updateUI: function() {
-        this.elements.apiUrlInput.value = this.config.apiUrl || '';
-        this.elements.maxMeetingsInput.value = Math.max(0, ...this.config.stages.slice(1)) || 150; // stage 0 は除く
-        this.updateStageSelector(); // 常に呼ぶ
+        // API URLは init で設定済みなのでここでは不要
+        // 最大交流回数入力欄の値を更新（現在の設定から）
+        this.elements.maxMeetingsInput.value = Math.max(1, ...this.config.stages.slice(1)) || 150; // stage 0 は除き、最低1
+
+        // 常にセレクターは更新しておく
+        this.updateStageSelector();
+
         // 現在アクティブなタブの内容を更新
         const activeTabId = document.querySelector('.tab.active')?.dataset.tab;
         if (activeTabId === 'stage-settings') {
@@ -285,7 +289,7 @@
       },
 
       updateStageSelector: function() {
-        const selectedValue = this.elements.stageSelector.value; // 現在の選択値を保持
+        const selectedValue = this.elements.stageSelector.value;
         this.elements.stageSelector.innerHTML = '';
         for (let i = 0; i <= 30; i++) {
           const option = document.createElement('option');
@@ -293,18 +297,36 @@
           option.textContent = `段階 ${i}`;
           this.elements.stageSelector.appendChild(option);
         }
-        if (selectedValue) {
-          this.elements.stageSelector.value = selectedValue; // 選択値を復元
+        if (selectedValue && parseInt(selectedValue) >= 0 && parseInt(selectedValue) <= 30) {
+          this.elements.stageSelector.value = selectedValue;
+        } else {
+          this.elements.stageSelector.value = '0'; // デフォルトは0
         }
-        // セレクタ変更時にファイル選択状態をリセット
-        this.elements.stageSelector.dispatchEvent(new Event('change'));
+        // セレクタの値を元に他のUIも更新
+        this.handleStageSelectionChange();
       },
+
+       // 段階セレクタの値が変わった時の処理をまとめる
+      handleStageSelectionChange: function() {
+          this.resetFileInput(); // ファイル選択・入力欄をリセット
+          // 選択中の段階の画像ID/URLを入力欄に表示（編集用）
+          const stageIndex = parseInt(this.elements.stageSelector.value);
+          if(stageIndex >= 0 && stageIndex < this.config.images.length) {
+             this.elements.imageIdUrlInput.value = this.config.images[stageIndex] || '';
+          } else {
+             this.elements.imageIdUrlInput.value = ''; // 範囲外ならクリア
+          }
+       },
 
       updateStageSettings: function() {
         this.elements.stageRowsContainer.innerHTML = '';
-         if (!this.config.stages || this.config.stages.length === 0) {
-            this.setupDefaultStages(); // stagesがなければ初期化
+        if (!this.config.stages || this.config.stages.length < 31) {
+             // 配列が不正なら初期化 (長さが足りないなど)
+             while(this.config.stages.length < 31) this.config.stages.push(0);
+             this.config.stages = this.config.stages.slice(0, 31);
+             console.warn("Stages設定配列の長さが不正だったため調整しました。");
         }
+
         for (let i = 0; i <= 30; i++) {
           const row = document.createElement('div');
           row.className = 'stage-row';
@@ -315,22 +337,27 @@
           input.type = 'number';
           input.min = '0';
           input.className = 'stage-input';
-          // 存在しないindexへのアクセスを防ぐ
-          input.value = (this.config.stages && i < this.config.stages.length) ? this.config.stages[i] : 0;
+          input.value = this.config.stages[i]; // 配列から値を取得
           input.dataset.stage = i;
+          // Stage 0 は編集不可にする (任意)
+          if (i === 0) {
+            input.readOnly = true;
+            input.style.backgroundColor = '#eee';
+          }
+
           input.addEventListener('change', (e) => {
             const stage = parseInt(e.target.dataset.stage);
             let value = parseInt(e.target.value) || 0;
-            if (value < 0) value = 0; // マイナス値防止
-            // 配列の長さを確認して拡張
-            while (this.config.stages.length <= stage) {
-                this.config.stages.push(0);
-            }
-            this.config.stages[stage] = value;
-            // Stage 0は常に0にする (任意)
-            if (stage === 0) {
-                this.config.stages[0] = 0;
-                e.target.value = 0;
+            if (value < 0) value = 0;
+            // 念のため配列長チェック
+            if(stage >= 0 && stage < this.config.stages.length) {
+               this.config.stages[stage] = value;
+               // Stage 0は常に0
+               if (stage === 0) {
+                   this.config.stages[0] = 0;
+                   e.target.value = 0;
+               }
+               // TODO: 後の段階より前の段階の値が大きくならないようなバリデーションを追加すると尚良い
             }
           });
           inputContainer.appendChild(input);
@@ -340,17 +367,16 @@
         }
       },
 
-      // 画像グリッド更新 (Drive IDに対応)
       updateImageGrid: function() {
         this.elements.imageGrid.innerHTML = '';
-        if (!this.config.images) this.config.images = Array(31).fill(''); // imagesがなければ初期化
-
-        // images配列の長さが足りなければ拡張
-        while (this.config.images.length <= 30) this.config.images.push('');
+        if (!this.config.images || this.config.images.length < 31) {
+             // 配列が不正なら初期化
+             while(this.config.images.length < 31) this.config.images.push('');
+             this.config.images = this.config.images.slice(0, 31);
+             console.warn("Images設定配列の長さが不正だったため調整しました。");
+        }
 
         this.config.images.forEach((imageIdentifier, index) => {
-          if (index > 30) return; // 0から30まで
-
           const imageItem = document.createElement('div');
           imageItem.className = 'image-item';
 
@@ -359,38 +385,37 @@
           stageNumber.textContent = `段階 ${index}`;
 
           const img = document.createElement('img');
-          img.alt = `成長段階 ${index}`;
-          img.onerror = () => { // 画像読み込み失敗時の処理
-              img.src = `https://via.placeholder.com/150x150.png?text=Stage+${index}+Error`;
+          img.alt = `成長段階 ${index} の画像`;
+
+          img.onerror = () => {
+              console.warn(`画像読込エラー: Stage ${index}, Identifier: ${imageIdentifier}`);
+              img.src = this.whitePixel; // エラー時は白画像
+              img.alt = `成長段階 ${index} (画像読込エラー)`;
               img.title = `画像読込エラー: ${imageIdentifier}`;
           };
 
           if (imageIdentifier) {
-            // Google Drive File ID かどうかを判定 (単純な文字列チェック、より厳密な判定も可能)
+            // Google Drive File ID かどうかを判定
             if (imageIdentifier.length > 20 && !imageIdentifier.startsWith('http') && !imageIdentifier.startsWith('data:')) {
-              // Drive File ID とみなす
               img.src = `https://drive.google.com/uc?export=view&id=${imageIdentifier}`;
               img.title = `Drive ID: ${imageIdentifier}`;
-            } else {
-              // URL または Data URL とみなす
+            } else { // URL または Data URL
               img.src = imageIdentifier;
               img.title = `URL: ${imageIdentifier.substring(0, 50)}...`;
             }
           } else {
-            img.src = `https://via.placeholder.com/150x150.png?text=Stage+${index}+No+Image`;
+            img.src = this.whitePixel; // 画像未設定時は白画像
+            img.alt = `成長段階 ${index} (画像未設定)`;
             img.title = '画像未設定';
           }
 
           const editBtn = document.createElement('button');
-          editBtn.textContent = '選択'; // ボタン名を変更
+          editBtn.textContent = '選択して編集';
           editBtn.className = 'btn-small';
           editBtn.addEventListener('click', () => {
             this.elements.stageSelector.value = index;
-             // セレクタ変更イベントを発火させて、入力欄をクリア
-            this.elements.stageSelector.dispatchEvent(new Event('change'));
-             // 編集対象のID/URLを入力欄に入れる
-            this.elements.imageIdUrlInput.value = imageIdentifier || '';
-            this.activateTab('image-settings'); // 画像設定タブを開く
+            this.handleStageSelectionChange(); // セレクタ変更時の処理を呼ぶ
+            this.activateTab('image-settings');
             this.elements.imageIdUrlInput.focus();
           });
 
@@ -416,130 +441,133 @@
           if (tabId === 'stage-settings') {
             this.updateStageSettings();
           } else if (tabId === 'image-settings') {
-            this.updateImageGrid(); // グリッドも更新
+            this.updateImageGrid();
           }
         }
       },
 
       setupEventListeners: function() {
-        // タブ切り替え
         this.elements.tabs.forEach(tab => {
           tab.addEventListener('click', () => {
-            const tabId = tab.getAttribute('data-tab');
-            this.activateTab(tabId);
+            this.activateTab(tab.getAttribute('data-tab'));
           });
         });
 
-        // API URL変更時にローカルストレージにも保存
         this.elements.apiUrlInput.addEventListener('change', () => {
             this.config.apiUrl = this.elements.apiUrlInput.value.trim();
+            // API URL は「設定保存」ボタンで config と一緒に送るのではなく、
+            // ローカルストレージに即時保存する方が混乱が少ない
             localStorage.setItem('treeAppApiUrl', this.config.apiUrl);
+            this.showSuccessMessage('API URLをブラウザに記憶しました。');
+            // 必要なら loadConfig を再実行して接続確認など
+            // this.loadConfig();
         });
 
-
-        // 画像ファイル選択時の処理
         this.elements.imageUploadInput.addEventListener('change', (event) => {
           const file = event.target.files[0];
           if (file) {
-            // ファイル情報を表示
+            // ファイルサイズチェック (例: 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                this.showErrorMessage('ファイルサイズが大きすぎます (5MB以下にしてください)');
+                this.resetFileInput();
+                return;
+            }
             this.elements.fileInfo.textContent = `選択中: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
             this.selectedFile = file;
-            this.elements.uploadImageBtn.disabled = false; // アップロードボタンを有効化
-             // URL/ID入力欄はクリア
-            this.elements.imageIdUrlInput.value = '';
+            this.elements.uploadImageBtn.disabled = false;
+            this.elements.imageIdUrlInput.value = ''; // URL/ID入力欄はクリア
           } else {
             this.resetFileInput();
           }
         });
 
-        // 段階セレクタ変更時の処理
-         this.elements.stageSelector.addEventListener('change', () => {
-             this.resetFileInput(); // ファイル選択・入力欄をリセット
-             // 選択中の段階の画像ID/URLを入力欄に表示（編集用）
-             const stageIndex = parseInt(this.elements.stageSelector.value);
-             this.elements.imageIdUrlInput.value = this.config.images[stageIndex] || '';
+        this.elements.stageSelector.addEventListener('change', () => {
+             this.handleStageSelectionChange();
          });
 
-        // 画像アップロードボタンのクリック処理
         this.elements.uploadImageBtn.addEventListener('click', () => {
-          if (this.selectedFile) {
+          if (this.selectedFile && this.config.apiUrl && this.config.apiUrl !== 'YOUR_DEFAULT_WEB_APP_URL_HERE') {
             const stageIndex = parseInt(this.elements.stageSelector.value);
             this.uploadAndSaveImage(this.selectedFile, stageIndex);
-          } else {
+          } else if (!this.selectedFile) {
             this.showErrorMessage('アップロードする画像ファイルを選択してください。');
+          } else {
+            this.showErrorMessage('API URLが設定されていません。基本設定タブで設定してください。');
           }
         });
 
-        // URL/ID設定ボタンのクリック処理
         this.elements.setIdUrlBtn.addEventListener('click', () => {
             const stageIndex = parseInt(this.elements.stageSelector.value);
             const idOrUrl = this.elements.imageIdUrlInput.value.trim();
 
-            if (!idOrUrl) {
-                 if (confirm(`段階 ${stageIndex} の画像をクリアしますか？`)) {
-                    this.setImageIdentifier(stageIndex, '');
-                    this.showSuccessMessage(`段階 ${stageIndex} の画像をクリアしました。`);
+            if (!idOrUrl) { // 入力が空の場合 -> クリア確認
+                 if (this.config.images[stageIndex]) { // 何か設定されていた場合のみ確認
+                    if (confirm(`段階 ${stageIndex} の画像をクリアしますか？`)) {
+                        this.setImageIdentifier(stageIndex, '');
+                        this.showSuccessMessage(`段階 ${stageIndex} の画像をクリアしました。(保存ボタンで確定)`);
+                    }
                  }
                  return;
             }
 
             // 簡単なURL/ID形式チェック (任意)
-             if (idOrUrl.includes(' ') || (idOrUrl.startsWith('http') && !idOrUrl.includes('.')) ) {
-                if (!confirm("入力された値はURLまたはDrive IDとして正しくない可能性があります。続行しますか？\n(例: https://.../image.png または 1aBcD... )")) {
+             if (idOrUrl.includes(' ') || (idOrUrl.startsWith('http') && idOrUrl.indexOf('.') === -1) ) {
+                if (!confirm("入力された値はURLまたはDrive IDとして正しくない可能性があります。続行しますか？")) {
                     return;
                 }
             }
 
             this.setImageIdentifier(stageIndex, idOrUrl);
-            this.showSuccessMessage(`段階 ${stageIndex} にURL/IDを設定しました。(保存ボタンを押して確定)`);
+            this.showSuccessMessage(`段階 ${stageIndex} にURL/IDを設定しました。(保存ボタンで確定)`);
         });
 
-        // すべての設定を保存ボタン
         this.elements.saveSettingsBtn.addEventListener('click', () => {
+          if (!this.config.apiUrl || this.config.apiUrl === 'YOUR_DEFAULT_WEB_APP_URL_HERE') {
+              this.showErrorMessage('API URLが設定されていません。基本設定タブで設定してください。');
+              return;
+          }
           this.saveSettings();
         });
 
-        // プレビューボタン
         this.elements.previewBtn.addEventListener('click', () => {
           window.open('index.html', '_blank');
         });
 
-        // メイン画面へボタン
         this.elements.homeBtn.addEventListener('click', () => {
           window.location.href = 'index.html';
         });
 
-        // 段階設定リセットボタン
         this.elements.resetStagesBtn.addEventListener('click', () => {
-          if (confirm('段階設定を初期値に戻しますか？')) {
-            this.setupDefaultStages(); // stages配列をリセット
-            this.updateStageSettings(); // UIを更新
-            this.showSuccessMessage('段階設定を初期値にリセットしました。(保存ボタンを押して確定)');
+          if (confirm('段階設定を初期値に戻しますか？（最大交流回数の値に基づいて計算されます）')) {
+            const defaultStages = this.setupDefaultStages();
+            if (defaultStages.length > 0) {
+                this.config.stages = defaultStages;
+                this.updateStageSettings();
+                this.showSuccessMessage('段階設定を初期値にリセットしました。(保存ボタンで確定)');
+            }
           }
         });
 
-        // 段階設定自動配布ボタン
         this.elements.autoDistributeBtn.addEventListener('click', () => {
           this.autoDistributeStages();
-          this.showSuccessMessage('段階設定を均等に自動設定しました。(保存ボタンを押して確定)');
+          this.showSuccessMessage('段階設定を均等に自動設定しました。(保存ボタンで確定)');
         });
       },
 
-      // ファイル入力関連のリセット
       resetFileInput: function() {
-          this.elements.imageUploadInput.value = ''; // ファイル選択をクリア
+          this.elements.imageUploadInput.value = '';
           this.elements.fileInfo.textContent = '';
           this.selectedFile = null;
-          this.elements.uploadImageBtn.disabled = true; // アップロードボタンを無効化
-          this.elements.uploadProgress.textContent = ''; // 進捗表示もクリア
-          // URL/ID入力欄はクリアしない（段階セレクタ変更時に対応）
+          this.elements.uploadImageBtn.disabled = true;
+          this.elements.uploadProgress.textContent = '';
+          // this.elements.imageIdUrlInput.value = ''; // 段階セレクタ変更時に処理するのでここではクリアしない
       },
 
-      // 画像をアップロードしてファイルIDを取得し、configに保存する
       uploadAndSaveImage: function(file, stageIndex) {
         this.showLoader('画像をアップロード中...');
-        this.elements.uploadProgress.textContent = '読み込み中...';
-        this.elements.uploadImageBtn.disabled = true; // 処理中は無効化
+        this.elements.uploadProgress.textContent = 'ファイル読み込み中...';
+        this.elements.uploadImageBtn.disabled = true; // 処理中は両方のボタンを無効化
+        this.elements.setIdUrlBtn.disabled = true;
 
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -548,11 +576,12 @@
 
           fetch(this.config.apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            // mode: 'no-cors', // 通常は不要。GAS側でCORSは処理されるはず。問題があれば試す。
+            headers: { 'Content-Type': 'application/json' }, // 送信データはJSON
             body: JSON.stringify({
               action: 'uploadImage',
               fileData: {
-                base64: base64Data,
+                base64: base64Data, // data:image/...;base64, を含むBase64文字列
                 type: file.type,
                 name: file.name
               }
@@ -561,9 +590,9 @@
           .then(response => response.json())
           .then(data => {
             if (data.status === 'success' && data.fileId) {
-              this.setImageIdentifier(stageIndex, data.fileId); // configにファイルIDを保存
-              this.showSuccessMessage(`段階 ${stageIndex} の画像をアップロードしました！ Drive File ID: ${data.fileId} (保存ボタンを押して確定)`);
-              this.resetFileInput(); // 成功したらファイル選択をリセット
+              this.setImageIdentifier(stageIndex, data.fileId);
+              this.showSuccessMessage(`段階 ${stageIndex} の画像をアップロード完了！ Drive ID: ${data.fileId} (保存ボタンで確定)`);
+              this.resetFileInput();
               this.elements.imageIdUrlInput.value = data.fileId; // 入力欄にもIDを表示
             } else {
               throw new Error(data.message || '画像アップロードに失敗しました。');
@@ -572,11 +601,13 @@
           .catch(error => {
             console.error('画像アップロードエラー:', error);
             this.showErrorMessage(`画像アップロード失敗: ${error.message}`);
+            this.resetFileInput(); // 失敗時もリセット
           })
           .finally(() => {
             this.hideLoader();
             this.elements.uploadProgress.textContent = '';
-            // ボタンの状態は resetFileInput で制御される
+            // ボタンの有効/無効は resetFileInput または handleStageSelectionChange で制御される
+            this.elements.setIdUrlBtn.disabled = false; // URL/ID設定ボタンは再度有効化
           });
         };
         reader.onerror = (error) => {
@@ -584,64 +615,56 @@
           this.showErrorMessage('ファイルの読み込みに失敗しました。');
           this.hideLoader();
           this.elements.uploadProgress.textContent = '';
-          this.elements.uploadImageBtn.disabled = false; // 失敗したら再度有効化
+          this.elements.uploadImageBtn.disabled = false; // 失敗したらアップロードボタンは再度有効化
+          this.elements.setIdUrlBtn.disabled = false;
         };
-        reader.readAsDataURL(file); // Base64で読み込む
+        reader.readAsDataURL(file); // Base64形式で読み込む
       },
 
-       // 指定した段階の画像識別子(URL or File ID)をconfigに設定し、UIを更新する
       setImageIdentifier: function(stageIndex, identifier) {
-           // images配列の長さを確認して拡張
-           while (this.config.images.length <= stageIndex) {
-               this.config.images.push('');
+           if(stageIndex >= 0 && stageIndex < this.config.images.length) {
+              this.config.images[stageIndex] = identifier;
+              this.updateImageGrid(); // グリッドを更新して反映
            }
-           this.config.images[stageIndex] = identifier;
-           this.updateImageGrid(); // 画像グリッドを更新して反映
        },
 
-
-      // すべての設定をGASに保存する
       saveSettings: function() {
-        this.config.apiUrl = this.elements.apiUrlInput.value.trim();
-        // stages配列の内容を input 要素から最新化 (念のため)
+        // stages配列の内容を input 要素から最新化
         const stageInputs = document.querySelectorAll('.stage-input');
         stageInputs.forEach(input => {
           const stage = parseInt(input.dataset.stage);
           let value = parseInt(input.value) || 0;
           if (value < 0) value = 0;
-           // 配列の長さを確認して拡張
-          while (this.config.stages.length <= stage) {
-              this.config.stages.push(0);
+          if (stage === 0) value = 0; // Stage 0 は 0
+          if(stage >= 0 && stage < this.config.stages.length) {
+             this.config.stages[stage] = value;
           }
-          this.config.stages[stage] = value;
         });
-        // Stage 0 は常に 0
-        this.config.stages[0] = 0;
-
-        // images配列は uploadAndSaveImage または setIdUrlBtn で更新済みのはず
 
         console.log('保存する設定:', this.config);
         this.showLoader('設定を保存中...');
 
+        // API URL は config に含めず、stages と images のみ送る
+        const configToSave = {
+             stages: this.config.stages,
+             images: this.config.images
+        };
+
         fetch(this.config.apiUrl, {
           method: 'POST',
+          // mode: 'no-cors', // 通常は不要
           headers: { 'Content-Type': 'application/json' },
-          // 注意: images配列に非常に長いData URLが含まれていると、POSTリクエストのサイズ制限に抵触する可能性がある
-          // Drive ID方式ならこの問題はほぼ発生しない
           body: JSON.stringify({
             action: 'saveConfig',
-            config: {
-                apiUrl: this.config.apiUrl, // API URL自体も保存する場合
-                stages: this.config.stages,
-                images: this.config.images
-            }
+            config: configToSave // stages と images のみ含むオブジェクト
           })
         })
         .then(response => response.json())
         .then(data => {
           if (data.status === 'success') {
             this.showSuccessMessage(data.message || 'すべての設定が保存されました！メイン画面に反映されます。');
-            localStorage.setItem('treeAppApiUrl', this.config.apiUrl); // API URLをローカルストレージに保存
+            // 保存成功時にローカルのAPI URLも保存 (任意だが混乱防止)
+            localStorage.setItem('treeAppApiUrl', this.config.apiUrl);
           } else {
             throw new Error(data.message || '設定の保存中に不明なエラーが発生しました。');
           }
@@ -657,13 +680,21 @@
 
       showLoader: function(message = '') {
         this.elements.loader.style.display = 'block';
+        // ボタン類を無効化
+        this.elements.saveSettingsBtn.disabled = true;
+        this.elements.uploadImageBtn.disabled = true;
+        this.elements.setIdUrlBtn.disabled = true;
         if (message) {
-            this.elements.uploadProgress.textContent = message; // ローダーとメッセージ表示を兼用
+            this.elements.uploadProgress.textContent = message;
         }
       },
       hideLoader: function() {
         this.elements.loader.style.display = 'none';
-         if (!this.selectedFile) { // アップロード中でなければメッセージも消す
+        // ボタン類を再度有効化
+        this.elements.saveSettingsBtn.disabled = false;
+        // uploadImageBtn は selectedFile がある場合のみ有効になるよう resetFileInput で制御
+        this.elements.setIdUrlBtn.disabled = false;
+        if (!this.selectedFile) { // アップロード中でなければメッセージも消す
             this.elements.uploadProgress.textContent = '';
         }
       },
@@ -674,14 +705,13 @@
         this.elements.errorMessage.style.display = 'none';
         setTimeout(() => {
           this.elements.successMessage.style.display = 'none';
-        }, 4000); // 少し長めに表示
+        }, 4000);
       },
 
       showErrorMessage: function(message) {
         this.elements.errorMessage.textContent = message;
         this.elements.errorMessage.style.display = 'block';
         this.elements.successMessage.style.display = 'none';
-        // エラーメッセージは自動で消さない、または長めに表示
         setTimeout(() => {
            this.elements.errorMessage.style.display = 'none';
         }, 8000);

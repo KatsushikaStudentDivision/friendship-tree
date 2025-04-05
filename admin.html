@@ -661,55 +661,71 @@
         }
       },
 
+      
       saveSettings: function() {
-        // stages配列の内容を input 要素から最新化
-        const stageInputs = document.querySelectorAll('.stage-input');
-        stageInputs.forEach(input => {
-          const stage = parseInt(input.dataset.stage);
-          let value = parseInt(input.value) || 0;
-          if (value < 0) value = 0;
-          if (stage === 0) value = 0; // Stage 0 は 0
-          if(stage >= 0 && stage < this.config.stages.length) {
-             this.config.stages[stage] = value;
-          }
-        });
+  // 設定保存前のコンソール出力
+  console.log('API URL:', this.config.apiUrl);
+  console.log('保存する設定データ:', JSON.stringify(this.config).length, 'バイト');
+  
+  this.showLoader('設定を保存中...');
+  
+  // API URL は config に含めず、stages と images のみ送る
+  const configToSave = {
+    stages: this.config.stages,
+    images: this.config.images
+  };
 
-        console.log('保存する設定:', this.config);
-        this.showLoader('設定を保存中...');
+  // フェッチ前のエラーチェック
+  if (!this.config.apiUrl) {
+    this.showErrorMessage('API URLが設定されていません');
+    this.hideLoader();
+    return;
+  }
 
-        // API URL は config に含めず、stages と images のみ送る
-        const configToSave = {
-             stages: this.config.stages,
-             images: this.config.images
-        };
-
-        fetch(this.config.apiUrl, {
-          method: 'POST',
-          // mode: 'no-cors', // 通常は不要
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'saveConfig',
-            config: configToSave // stages と images のみ含むオブジェクト
-          })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.status === 'success') {
-            this.showSuccessMessage(data.message || 'すべての設定が保存されました！メイン画面に反映されます。');
-            // 保存成功時にローカルのAPI URLも保存 (任意だが混乱防止)
-            localStorage.setItem('treeAppApiUrl', this.config.apiUrl);
-          } else {
-            throw new Error(data.message || '設定の保存中に不明なエラーが発生しました。');
-          }
-        })
-        .catch(error => {
-          console.error('保存エラー:', error);
-          this.showErrorMessage(`設定の保存に失敗しました: ${error.message}`);
-        })
-        .finally(() => {
-          this.hideLoader();
-        });
-      },
+  // デバッグモードを追加（URLにデバッグパラメータを追加）
+  const apiUrl = this.config.apiUrl + (this.config.apiUrl.includes('?') ? '&' : '?') + 'debug=true';
+  
+  fetch(apiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'saveConfig',
+      config: configToSave
+    })
+  })
+  .then(response => {
+    console.log('サーバー応答ステータス:', response.status);
+    if (!response.ok) {
+      throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('サーバー応答データ:', data);
+    if (data.status === 'success') {
+      this.showSuccessMessage(data.message || 'すべての設定が保存されました！');
+      localStorage.setItem('treeAppApiUrl', this.config.apiUrl);
+    } else {
+      throw new Error(data.message || '不明なエラー');
+    }
+  })
+  .catch(error => {
+    console.error('保存エラー詳細:', error);
+    
+    // エラーの種類に応じたメッセージ
+    let errorMsg = `設定の保存に失敗しました: ${error.message}`;
+    if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      errorMsg += '（ネットワークエラー - URLとインターネット接続を確認してください）';
+    } else if (error.message.includes('NetworkError')) {
+      errorMsg += '（CORS制限の可能性があります - GASの設定を確認してください）';
+    }
+    
+    this.showErrorMessage(errorMsg);
+  })
+  .finally(() => {
+    this.hideLoader();
+  });
+}
 
       showLoader: function(message = '') {
         this.elements.loader.style.display = 'block';

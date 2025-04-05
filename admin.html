@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>友情の木 - 管理画面</title>
   <style>
-    /* スタイルは変更なし */
+    /* 基本スタイル */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #f0f4f8; padding: 20px; color: #333; }
     .container { max-width: 1000px; margin: 0 auto; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding: 30px; }
@@ -50,6 +50,24 @@
     .file-info { font-size: 0.9em; color: #555; margin-top: 5px; min-height: 1.2em;} /* min-height追加 */
     .upload-progress { margin-top: 10px; font-style: italic; color: #388e3c;}
     small { display: block; margin-top: 4px; font-size: 0.85em; color: #666; } /* smallタグ調整 */
+    
+    /* リスポンシブ対応 */
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      h1 { font-size: 22px; margin-bottom: 20px; }
+      .form-section { padding: 15px; }
+      .buttons { flex-direction: column; }
+      .buttons button { width: 100%; margin: 5px 0; }
+    }
+    
+    @media (max-width: 480px) {
+      h1 { font-size: 18px; }
+      .tabs { flex-direction: column; }
+      .tab { margin-bottom: 2px; border-radius: 4px; }
+      .tab.active { border-bottom-color: #ddd; }
+      .stage-settings-header, .stage-row { grid-template-columns: 80px 1fr; }
+      .image-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -126,7 +144,7 @@
             <label for="image-id-url-input">既存の画像URL または Google Drive ファイルID:</label>
             <input type="text" id="image-id-url-input" placeholder="https://.../image.jpg または DriveのファイルID">
              <button id="set-id-url-btn" style="margin-top: 5px;">入力したURL/IDを設定</button>
-             <small>※ 画像をクリアする場合は入力欄を空にして設定ボタンを押します。</small>
+             <small>※ Flickr画像の場合は、共有された画像URLを直接入力できます。<br>画像をクリアする場合は入力欄を空にして設定ボタンを押します。</small>
           </div>
            <small>※ 設定変更後は「すべての設定を保存」を押して確定させてください。</small>
         </div>
@@ -395,11 +413,16 @@
           };
 
           if (imageIdentifier) {
+            // Flickr URLかどうかを判定
+            if (imageIdentifier.includes('flickr.com')) {
+              img.src = imageIdentifier;
+              img.title = `Flickr URL: ${imageIdentifier.substring(0, 50)}...`;
+            }
             // Google Drive File ID かどうかを判定
-            if (imageIdentifier.length > 20 && !imageIdentifier.startsWith('http') && !imageIdentifier.startsWith('data:')) {
+            else if (imageIdentifier.length > 20 && !imageIdentifier.startsWith('http') && !imageIdentifier.startsWith('data:')) {
               img.src = `https://drive.google.com/uc?export=view&id=${imageIdentifier}`;
               img.title = `Drive ID: ${imageIdentifier}`;
-            } else { // URL または Data URL
+            } else { // 他のURL または Data URL
               img.src = imageIdentifier;
               img.title = `URL: ${imageIdentifier.substring(0, 50)}...`;
             }
@@ -453,6 +476,7 @@
           });
         });
 
+        
         this.elements.apiUrlInput.addEventListener('change', () => {
             this.config.apiUrl = this.elements.apiUrlInput.value.trim();
             // API URL は「設定保存」ボタンで config と一緒に送るのではなく、
@@ -511,7 +535,7 @@
             }
 
             // 簡単なURL/ID形式チェック (任意)
-             if (idOrUrl.includes(' ') || (idOrUrl.startsWith('http') && idOrUrl.indexOf('.') === -1) ) {
+            if (!idOrUrl.includes('flickr.com') && idOrUrl.includes(' ') || (idOrUrl.startsWith('http') && idOrUrl.indexOf('.') === -1)) {
                 if (!confirm("入力された値はURLまたはDrive IDとして正しくない可能性があります。続行しますか？")) {
                     return;
                 }
@@ -622,11 +646,20 @@
       },
 
       setImageIdentifier: function(stageIndex, identifier) {
-           if(stageIndex >= 0 && stageIndex < this.config.images.length) {
-              this.config.images[stageIndex] = identifier;
-              this.updateImageGrid(); // グリッドを更新して反映
-           }
-       },
+        if(stageIndex >= 0 && stageIndex < this.config.images.length) {
+          // Flickr URLの場合はそのまま使用
+          if (identifier && identifier.includes('flickr.com')) {
+            this.config.images[stageIndex] = identifier;
+          } else if (identifier) {
+            // 他のURLやGoogle Drive IDの処理（既存のロジック）
+            this.config.images[stageIndex] = identifier;
+          } else {
+            // 空の場合
+            this.config.images[stageIndex] = '';
+          }
+          this.updateImageGrid(); // グリッドを更新して反映
+        }
+      },
 
       saveSettings: function() {
         // stages配列の内容を input 要素から最新化

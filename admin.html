@@ -228,6 +228,7 @@
       },
       selectedFile: null, // アップロード用に選択されたファイルを保持
       whitePixel: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/7+98QAAAABJRU5ErkJggg==', // 白画像データ
+      fetchTryCount: 0, // fetch試行回数を追跡するためのカウンター
 
       init: function() {
         // API URLをローカルストレージから読み込むか、デフォルト値を使用 (例)
@@ -601,7 +602,17 @@
               this.showErrorMessage('API URLが設定されていません。基本設定タブで設定してください。');
               return;
           }
-          this.saveSettings();
+          
+          // fetch方式試行カウンタを追加
+          this.fetchTryCount = (this.fetchTryCount || 0) + 1;
+          
+          // 3回以上fetch方式で失敗している場合はフォームポスト方式を試す
+          if (this.fetchTryCount > 2 && this.elements.debugMode.checked) {
+            console.log('fetch方式での送信が複数回失敗したため、フォームポスト方式に切り替えます');
+            this.saveSettingsViaForm();
+          } else {
+            this.saveSettings();
+          }
         });
 
         this.elements.saveStagesOnlyBtn.addEventListener('click', () => {
@@ -609,7 +620,28 @@
               this.showErrorMessage('API URLが設定されていません。基本設定タブで設定してください。');
               return;
           }
-          this.saveStagesOnly();
+          
+          if (this.fetchTryCount > 2 && this.elements.debugMode.checked) {
+            // フォームポスト方式でステージのみ保存
+            const postData = {
+              action: 'saveConfig',
+              config: { stages: this.config.stages, images: [] },
+              saveType: 'stagesOnly'
+            };
+            this.showLoader('成長段階設定を保存中...');
+            this.formPostData(postData, (error, data) => {
+              if (error) {
+                this.showErrorMessage(`成長段階設定の保存に失敗しました: ${error.message}`);
+              } else if (data && data.status === 'success') {
+                this.showSuccessMessage('成長段階設定を保存しました！');
+              } else {
+                this.showErrorMessage(`保存失敗: ${data?.message || '不明なエラー'}`);
+              }
+              this.hideLoader();
+            });
+          } else {
+            this.saveStagesOnly();
+          }
         });
 
         this.elements.saveImagesOnlyBtn.addEventListener('click', () => {
@@ -617,7 +649,28 @@
               this.showErrorMessage('API URLが設定されていません。基本設定タブで設定してください。');
               return;
           }
-          this.saveImagesOnly();
+          
+          if (this.fetchTryCount > 2 && this.elements.debugMode.checked) {
+            // フォームポスト方式で画像のみ保存
+            const postData = {
+              action: 'saveConfig',
+              config: { stages: [], images: this.config.images },
+              saveType: 'imagesOnly'
+            };
+            this.showLoader('画像設定を保存中...');
+            this.formPostData(postData, (error, data) => {
+              if (error) {
+                this.showErrorMessage(`画像設定の保存に失敗しました: ${error.message}`);
+              } else if (data && data.status === 'success') {
+                this.showSuccessMessage('画像設定を保存しました！');
+              } else {
+                this.showErrorMessage(`保存失敗: ${data?.message || '不明なエラー'}`);
+              }
+              this.hideLoader();
+            });
+          } else {
+            this.saveImagesOnly();
+          }
         });
 
         this.elements.clearAllImagesBtn.addEventListener('click', () => {
@@ -685,7 +738,14 @@
 
           fetch(this.config.apiUrl, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' }, // 送信データはJSON
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            redirect: 'follow',
+            referrerPolicy: 'no-referrer',
             body: JSON.stringify({
               action: 'uploadImage',
               fileData: {
@@ -697,7 +757,10 @@
           })
           .then(response => {
             if (!response.ok) {
-              throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+              return response.text().then(text => {
+                console.error('エラーレスポンス本文:', text);
+                throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+              });
             }
             return response.json();
           })
@@ -752,6 +815,99 @@
         }
       },
 
+      // fetch の代わりにフォームを使ったPOST送信を行う関数
+      formPostData: function(data, callback) {
+        const targetFrame = document.getElementById('hidden-frame');
+        // iframeがなければ作成
+        if (!targetFrame) {
+          const iframe = document.createElement('iframe');
+          iframe.id = 'hidden-frame';
+          iframe.name = 'hidden-frame';
+          iframe.style.display = 'none';
+          document.body.appendChild(iframe);
+          
+          // iframeロード時の処理
+          iframe.onload = function() {
+            try {
+              // iframeの内容がJSONかどうか確認
+              const frameContent = iframe.contentWindow.document.body.textContent || "";
+              if (frameContent.trim().startsWith('{') && frameContent.trim().endsWith('}')) {
+                const jsonData = JSON.parse(frameContent);
+                console.log('Iframe応答データ:', jsonData);
+                if (callback) callback(null, jsonData);
+              }
+            } catch (error) {
+              console.error('Iframe応答解析エラー:', error);
+              if (callback) callback(error, null);
+            }
+          };
+        }
+
+        // フォーム作成
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = this.config.apiUrl;
+        form.target = 'hidden-frame'; // iframeにリダイレクト
+        form.style.display = 'none';
+        
+        // JSONデータをフォームデータに変換
+        const dataField = document.createElement('input');
+        dataField.type = 'hidden';
+        dataField.name = 'data';
+        dataField.value = JSON.stringify(data);
+        form.appendChild(dataField);
+
+        // フォームをDOMに追加して送信
+        document.body.appendChild(form);
+        form.submit();
+        
+        // フォームをDOMから削除
+        setTimeout(() => {
+          document.body.removeChild(form);
+        }, 500);
+      },
+
+      // saveSettings関数の代替バージョン
+      saveSettingsViaForm: function() {
+        // stages配列の内容を最新化
+        const stageInputs = document.querySelectorAll('.stage-input');
+        stageInputs.forEach(input => {
+          const stage = parseInt(input.dataset.stage);
+          let value = parseInt(input.value) || 0;
+          if (value < 0) value = 0;
+          if (stage === 0) value = 0;
+          if(stage >= 0 && stage < this.config.stages.length) {
+             this.config.stages[stage] = value;
+          }
+        });
+
+        this.showLoader('設定を保存中...');
+        
+        // configToSave は同じ
+        const configToSave = {
+          stages: this.config.stages,
+          images: this.config.images
+        };
+        
+        const postData = {
+          action: 'saveConfig',
+          config: configToSave
+        };
+        
+        this.formPostData(postData, (error, data) => {
+          if (error) {
+            console.error('設定保存エラー:', error);
+            this.showErrorMessage(`設定保存に失敗しました: ${error.message}`);
+          } else if (data && data.status === 'success') {
+            this.showSuccessMessage('設定を保存しました！');
+            localStorage.setItem('treeAppApiUrl', this.config.apiUrl);
+          } else {
+            this.showErrorMessage(`設定保存に失敗: ${data?.message || '不明なエラー'}`);
+          }
+          this.hideLoader();
+        });
+      },
+
       saveSettings: function() {
         // 設定保存前のコンソール出力
         console.log('API URL:', this.config.apiUrl);
@@ -790,7 +946,14 @@
         
         fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
           body: JSON.stringify({
             action: 'saveConfig',
             config: configToSave
@@ -799,7 +962,10 @@
         .then(response => {
           console.log('サーバー応答ステータス:', response.status);
           if (!response.ok) {
-            throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+            return response.text().then(text => {
+              console.error('エラーレスポンス本文:', text);
+              throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+            });
           }
           return response.json();
         })
@@ -837,7 +1003,8 @@
             this.elements.debugInfo.innerHTML = `<strong>エラー詳細:</strong><br>
                                               <p>${error.toString()}</p>
                                               <p>スタック: ${error.stack}</p>
-                                              <p>ヒント: 「成長段階のみ保存」や「画像設定のみ保存」ボタンを試してみてください。</p>`;
+                                              <p>ヒント: 「成長段階のみ保存」や「画像設定のみ保存」ボタンを試してみてください。<br>
+                                              また、デバッグモードがオンの状態で3回以上失敗すると代替方法に切り替わります。</p>`;
           }
         })
         .finally(() => {
@@ -874,7 +1041,14 @@
         
         fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
           body: JSON.stringify({
             action: 'saveConfig',
             config: configToSave,
@@ -882,7 +1056,12 @@
           })
         })
         .then(response => {
-          if (!response.ok) throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+          if (!response.ok) {
+            return response.text().then(text => {
+              console.error('エラーレスポンス本文:', text);
+              throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+            });
+          }
           return response.json();
         })
         .then(data => {
@@ -900,7 +1079,16 @@
         })
         .catch(error => {
           console.error('成長段階保存エラー:', error);
-          this.showErrorMessage(`成長段階設定の保存に失敗しました: ${error.message}`);
+          
+          // エラーの種類に応じたメッセージ
+          let errorMsg = `成長段階設定の保存に失敗しました: ${error.message}`;
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            errorMsg += '（ネットワークエラー - URLとインターネット接続を確認してください）';
+          } else if (error.message.includes('NetworkError')) {
+            errorMsg += '（CORS制限の可能性があります - GASの設定を確認してください）';
+          }
+          
+          this.showErrorMessage(errorMsg);
           
           // デバッグモードの場合は詳細エラー情報表示
           if (isDebug) {
@@ -912,7 +1100,6 @@
           this.hideLoader();
         });
       },
-
       // 画像設定のみを保存する関数
       saveImagesOnly: function() {
         this.showLoader('画像設定を保存中...');
@@ -930,7 +1117,14 @@
         
         fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          mode: 'cors',
+          cache: 'no-cache',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          redirect: 'follow',
+          referrerPolicy: 'no-referrer',
           body: JSON.stringify({
             action: 'saveConfig',
             config: configToSave,
@@ -938,7 +1132,12 @@
           })
         })
         .then(response => {
-          if (!response.ok) throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+          if (!response.ok) {
+            return response.text().then(text => {
+              console.error('エラーレスポンス本文:', text);
+              throw new Error(`サーバーエラー: ${response.status} ${response.statusText}`);
+            });
+          }
           return response.json();
         })
         .then(data => {
@@ -956,7 +1155,16 @@
         })
         .catch(error => {
           console.error('画像設定保存エラー:', error);
-          this.showErrorMessage(`画像設定の保存に失敗しました: ${error.message}`);
+          
+          // エラーの種類に応じたメッセージ
+          let errorMsg = `画像設定の保存に失敗しました: ${error.message}`;
+          if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            errorMsg += '（ネットワークエラー - URLとインターネット接続を確認してください）';
+          } else if (error.message.includes('NetworkError')) {
+            errorMsg += '（CORS制限の可能性があります - GASの設定を確認してください）';
+          }
+          
+          this.showErrorMessage(errorMsg);
           
           // デバッグモードの場合は詳細エラー情報表示
           if (isDebug) {
